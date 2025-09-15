@@ -5,7 +5,7 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from datetime import datetime, timezone
 from pathlib import Path
 from auth_services import utils as auth_util  
-
+from pydantic import BaseModel
 auth_engine = APIRouter(prefix="/auth")
 db = get_db()
 
@@ -103,4 +103,35 @@ async def verifyotp_api(request: OtpModel):
         "success": True,
         "message": "OTP verified successfully",
         "email": request.email
+    }
+
+
+class LoginModel(BaseModel):
+    email: str
+    pwd: str
+
+
+# -------------------- Login API --------------------
+@auth_engine.post("/email/login")
+async def login_api(login: LoginModel):
+    user = await db.user.find_one({"email": login.email})
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Verify password
+    if not auth_util.verify_password(login.pwd, user["pwd"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    return {
+        "success": True,
+        "message": "Login successful",
+        "userid": user["_id"],
+        "name": user["name"],
+        "email": user["email"],
+        "age": user.get("age"),
+        "height": user.get("height"),
+        "weight": user.get("weight"),
+        "bmi": user.get("bmi"),
+        "phoneno": user.get("phoneno", ""),
+        "profilePic": user.get("profilePic", "")
     }
