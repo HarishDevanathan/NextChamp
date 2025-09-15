@@ -37,26 +37,15 @@ def calculate_age(dob_str: str) -> int:
     age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
     return age
 
-# ------------------- BMI -------------------
-def calculate_bmi(height_str: str, weight_str: str) -> float:
+def calculate_bmi(height_cm: str, weight_kg: str) -> float:
     """
-    height_str: e.g., "170cm" or "1.7m"
-    weight_str: e.g., "65kg"
+    height_cm: height in centimeters (str or int)
+    weight_kg: weight in kilograms (str or int)
     Returns BMI rounded to 1 decimal place
     """
-    # Convert height to meters
-    if "cm" in height_str:
-        height = float(height_str.replace("cm", "")) / 100
-    elif "m" in height_str:
-        height = float(height_str.replace("m", ""))
-    else:
-        height = float(height_str)  # assume meters if no unit
-    
-    # Convert weight to kg
-    if "kg" in weight_str:
-        weight = float(weight_str.replace("kg", ""))
-    else:
-        weight = float(weight_str)
-    
-    bmi = weight / (height ** 2)
+    height_m = float(height_cm) / 100
+    weight = float(weight_kg)
+    bmi = weight / (height_m ** 2)
     return round(bmi, 1)
+
+
