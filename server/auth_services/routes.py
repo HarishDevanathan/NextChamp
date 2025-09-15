@@ -1,30 +1,85 @@
-from fastapi import APIRouter, HTTPException
-from auth_services.models import SignupModel, EmailRequest, OtpModel
-from db.connection import get_db
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
+# In /server/auth_services/routes.py
+
+# --- Standard Imports ---
+import base64
+import os
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
-from auth_services import utils as auth_util  
+
+# --- FastAPI and Pydantic Imports ---
+from fastapi import APIRouter, HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings # <-- For loading .env files
+
+# --- Library Imports ---
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
+
+# --- Local Imports ---
+from .models import SignupModel, EmailRequest, OtpModel
+from db.connection import get_db
+from . import utils as auth_util  
+
+# --- Initial Setup ---
 auth_engine = APIRouter(prefix="/auth")
 db = get_db()
 
-mail_config = ConnectionConfig(
-    MAIL_USERNAME="nextchamp18@gmail.com",
-    MAIL_PASSWORD="rkyglmcpvxqmiayn",
-    MAIL_FROM="nextchamp18@gmail.com",
-    MAIL_PORT=587,
-    MAIL_SERVER="smtp.gmail.com",
-    MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False,
-    USE_CREDENTIALS=True,
-    TEMPLATE_FOLDER=Path(__file__).resolve().parent.parent / "static" / "templates"
-)
+# --- NEW: Secure Configuration Loading ---
+# This class will read variables from your .env file
+class EnvironmentSettings(BaseSettings):
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_PORT: int
+    MAIL_SERVER: str
+    MAIL_STARTTLS: bool
+    MAIL_SSL_TLS: bool
+    USE_CREDENTIALS: bool
+    TEMPLATE_FOLDER: Path
+
+    class Config:
+        env_file = '.env' # Specifies the file to read from
+        env_file_encoding = 'utf-8'
+
+# Create an instance of the settings to load the environment variables
+settings = EnvironmentSettings()
+
+# Create the mail_config from the loaded settings
+mail_config = ConnectionConfig(**settings.model_dump())
+# --- END of new configuration ---
+
+# --- Directory Setup for Image Uploads ---
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+IMAGES_DIR = STATIC_DIR / "images"
+os.makedirs(IMAGES_DIR, exist_ok=True)
+
+
+# --- API Endpoints ---
+
 @auth_engine.post("/email/signup")
 async def signup_api(signup: SignupModel):
     existing_user = await db.user.find_one({"email": signup.email})
     if existing_user:
-        return {"success": False, "message": "User already exists"}
+        raise HTTPException(status_code=400, detail="User with this email already exists")
+
+    # --- Decode Base64 and Save Image ---
+    try:
+        base64_image_data = signup.profilePic
+        if "," in base64_image_data:
+            _, base64_image_data = base64_image_data.split(",", 1)
+        
+        image_bytes = base64.b64decode(base64_image_data)
+        unique_filename = f"{datetime.now().timestamp()}_{signup.username}.jpg"
+        file_location = IMAGES_DIR / unique_filename
+
+        with open(file_location, "wb") as file_object:
+            file_object.write(image_bytes)
+
+        profile_pic_url = f"/static/images/{unique_filename}"
+    except Exception as e:
+        print(f"Error decoding or saving Base64 image: {e}")
+        raise HTTPException(status_code=500, detail="Could not process the provided profile picture.")
+    # --- END Image Handling ---
     
     age = auth_util.calculate_age(signup.dob)
     bmi = auth_util.calculate_bmi(signup.height, signup.weight)
@@ -32,7 +87,6 @@ async def signup_api(signup: SignupModel):
     user_id = await auth_util.generate_userid(signup.username, db)
     hashed_pwd = auth_util.get_password_hash(signup.pwd)
 
-    # Include remaining fields: phoneno and profilePic
     user_doc = {
         "_id": user_id,
         "name": signup.username,
@@ -43,8 +97,8 @@ async def signup_api(signup: SignupModel):
         "height": signup.height,
         "weight": signup.weight,
         "bmi": str(bmi),
-        "phoneno": getattr(signup, "phoneno", ""),       # default to empty string
-        "profilePic": getattr(signup, "profilePic", ""), # default to empty string
+        "phoneno": getattr(signup, "phoneno", ""),
+        "profilePic": profile_pic_url, 
         "createdAt": datetime.now(timezone.utc)
     }
     
@@ -52,19 +106,18 @@ async def signup_api(signup: SignupModel):
     
     return {"success": True, "message": "User registered successfully", "userid": user_id}
 
+
 @auth_engine.post("/email/signup/sendotp")
 async def sendotp_api(request: EmailRequest):
     email = request.email
     otp = auth_util.generate_otp()
     
-    # Store OTP in DB
     await db.otp_store.update_one(
         {"email": email}, 
         {"$set": {"otp": otp, "createdAt": datetime.now(timezone.utc)}},
         upsert=True
     )
     
-    # Send OTP email
     message = MessageSchema(
         subject="Your OTP Code",
         recipients=[email],
@@ -81,7 +134,6 @@ async def sendotp_api(request: EmailRequest):
     
     return {"message": "OTP sent successfully"}
 
-from datetime import datetime, timezone
 
 @auth_engine.post("/email/verifyotp")
 async def verifyotp_api(request: OtpModel):
@@ -89,12 +141,10 @@ async def verifyotp_api(request: OtpModel):
     if not otp_entry:
         raise HTTPException(status_code=401, detail="Invalid OTP or email mismatch")
     
-    # Convert naive datetime from DB to aware UTC datetime
     created_at = otp_entry["createdAt"]
     if created_at.tzinfo is None:
         created_at = created_at.replace(tzinfo=timezone.utc)
 
-    # Check expiry (10 mins)
     if (datetime.now(timezone.utc) - created_at).total_seconds() > 10 * 60:
         await db.otp_store.delete_one({"email": request.email, "otp": request.otp})
         raise HTTPException(status_code=401, detail="OTP expired")
@@ -111,21 +161,19 @@ class LoginModel(BaseModel):
     pwd: str
 
 
-# -------------------- Login API --------------------
 @auth_engine.post("/email/login")
 async def login_api(login: LoginModel):
     user = await db.user.find_one({"email": login.email})
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    # Verify password
     if not auth_util.verify_password(login.pwd, user["pwd"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     return {
         "success": True,
         "message": "Login successful",
-        "userid": user["_id"],
+        "userid": str(user["_id"]),   # <--- THIS IS THE FIX
         "name": user["name"],
         "email": user["email"],
         "age": user.get("age"),
