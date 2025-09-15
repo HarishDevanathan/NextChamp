@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+python-dotenv
+motor
+certifi
+pydantic
+bcrypt==4.0.1
+passlib
+python-jose[cryptography]
+authlib
+fastapi_mail
+python-multipart
+httpx
+itsdangerous
+uvicorn[standard]
+pydantic[email]
