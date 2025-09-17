@@ -1,5 +1,3 @@
-// In lib/pages/register.dart
-
 import 'dart:convert';
 import 'package:client/pages/login.dart';
 import 'package:client/pages/otppicker.dart';
@@ -40,7 +38,6 @@ class _RegisterPageState extends State<RegisterPage> {
       final responseBody = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // On success, navigate to the OTP screen and PASS THE EMAIL
         if (mounted) {
           Navigator.push(
             context,

@@ -4,5 +4,13 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
+	
+	<!-- Allow outgoing HTTP/HTTPS connections -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+	
+	<!-- (Optional) Allow running a local server if needed -->
+	<key>com.apple.security.network.server</key>
+	<true/>
 </dict>
 </plist>
