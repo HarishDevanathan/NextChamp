@@ -1,5 +1,5 @@
-// In lib/pages/home_page.dart
-
+import 'package:client/pages/athlete_data.dart';
+import 'package:client/pages/performance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,13 +11,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String? _userName;
-  String? _userEmail;
+  AthleteData? _athleteData;
   String? _profilePicUrl;
   bool _isLoading = true;
-
-  // IMPORTANT: This must match the IP in your other files
-  final String _baseUrl = "http://127.0.0.1:8000";
 
   @override
   void initState() {
@@ -25,19 +21,45 @@ class _HomePageState extends State<HomePage> {
     _loadUserData();
   }
 
-  // Function to load the saved data from the device
   Future<void> _loadUserData() async {
+    // --- CORRECTED URL ---
+    // The previous version had a typo with two ports (:8000:8000). This is the correct format.
+    // IMPORTANT: Replace with your computer's local network IP address for a real device.
+    const String apiBaseUrl = "http://127.0.0.1:8000";
+    // --- END of URL Correction ---
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    final String name = prefs.getString('name') ?? 'Athlete';
+    final String? profilePicPath = prefs.getString('profilePic');
+    
+    if (profilePicPath != null && profilePicPath.isNotEmpty) {
+      _profilePicUrl = apiBaseUrl + profilePicPath; 
+    }
+
+    await Future.delayed(const Duration(seconds: 1)); 
+    
+    final mockData = AthleteData(
+      name: name,
+      age: 17,
+      gender: "Male",
+      sportPreference: "Athletics",
+      profileCompletion: 80,
+      fitnessLevel: "Intermediate",
+      recentPerformance: {
+        "Vertical Jump": Performance(score: "65 cm", bestScore: "68 cm", isImproving: true),
+        "Shuttle Run": Performance(score: "9.8 s", bestScore: "9.5 s", isImproving: false),
+        "Endurance": Performance(score: "12:30 min", bestScore: "12:15 min", isImproving: false),
+        "Sit-ups (1 min)": Performance(score: "45 reps", bestScore: "42 reps", isImproving: true),
+      },
+      ongoingChallenges: [
+        Challenge(title: "National Endurance Test", deadline: "Closes Sept 30"),
+        Challenge(title: "7-Day Sit-Up Challenge", deadline: "Ends in 3 days"),
+      ],
+    );
+
     setState(() {
-      _userName = prefs.getString('userName');
-      _userEmail = prefs.getString('userEmail');
-      
-      // Retrieve the path and construct the full URL
-      final String? profilePicPath = prefs.getString('profilePic');
-      if (profilePicPath != null && profilePicPath.isNotEmpty) {
-        _profilePicUrl = _baseUrl + profilePicPath;
-      }
-      
+      _athleteData = mockData;
       _isLoading = false;
     });
   }
@@ -46,66 +68,214 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('Home'),
-        backgroundColor: Colors.grey.shade900,
-        elevation: 0,
-        actions: [
-          // Add a logout button or other actions here
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              // TODO: Implement logout logic (clear shared_preferences and navigate to login)
-            },
-          )
-        ],
-      ),
+      
+      // --- BODY OF THE PAGE (UNCHANGED) ---
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // --- DISPLAY THE PROFILE PICTURE ---
-                    CircleAvatar(
-                      radius: 80,
-                      backgroundColor: Colors.grey.shade800,
-                      // Use NetworkImage to load the image from your server
-                      backgroundImage: _profilePicUrl != null
-                          ? NetworkImage(_profilePicUrl!)
-                          : null,
-                      child: _profilePicUrl == null
-                          // Show a placeholder icon if there's no image URL
-                          ? const Icon(Icons.person, size: 80, color: Colors.white70)
-                          : null,
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFD0FD3E)))
+          : CustomScrollView(
+              slivers: [
+                _buildSliverAppBar(),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildQuickStartButtons(),
+                        const SizedBox(height: 32),
+                        _buildSectionHeader("Recent Performance"),
+                        const SizedBox(height: 16),
+                        _buildPerformanceGrid(),
+                        const SizedBox(height: 32),
+                        _buildSectionHeader("Ongoing Challenges"),
+                        const SizedBox(height: 16),
+                        _buildChallengesList(),
+                      ],
                     ),
-                    const SizedBox(height: 30),
+                  ),
+                ),
+              ],
+            ),
+      
+      // --- NEW FLOATING ACTION BUTTON FOR AI CHATBOT ---
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Implement the navigation or overlay for your AI chatbot screen.
+          // For now, we'll show a simple snackbar as a placeholder.
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('AI Assistant coming soon!'),
+              backgroundColor: Color.fromARGB(255, 30, 30, 30),
+            ),
+          );
+        },
+        backgroundColor: const Color(0xFFD0FD3E), // Use your app's primary color
+        foregroundColor: Colors.black, // Color of the icon
+        tooltip: 'AI Assistant', // Shows on long press (good for accessibility)
+        child: const Icon(Icons.smart_toy_outlined), // A suitable icon for an AI bot
+      ),
+      // --- END OF NEW CODE ---
+    );
+  }
 
-                    // Display other user information
-                    Text(
-                      // Use a default value if the name is not found
-                      _userName ?? 'Welcome!',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      _userEmail ?? 'No email found',
-                      style: TextStyle(
-                        color: Colors.grey.shade400,
-                        fontSize: 18,
-                      ),
-                    ),
-                    // You can add more user details here
-                  ],
+  // --- All other UI Builder Methods (_buildSliverAppBar, etc.) are unchanged ---
+  // They are omitted here for brevity, but you should keep them in your code.
+
+  Widget _buildSliverAppBar() {
+    return SliverAppBar(
+      expandedHeight: 240.0,
+      backgroundColor: const Color.fromARGB(255, 22, 22, 22),
+      pinned: true,
+      stretch: true,
+      flexibleSpace: FlexibleSpaceBar(
+        centerTitle: false,
+        titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        title: Text(
+          "Welcome, ${_athleteData!.name.split(' ').first}",
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        background: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 60, 16, 50),
+            child: _buildProfileSnapshot(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileSnapshot() {
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 40,
+          backgroundColor: Colors.grey.shade800,
+          backgroundImage: _profilePicUrl != null ? NetworkImage(_profilePicUrl!) : null,
+          child: _profilePicUrl == null ? const Icon(Icons.person, size: 40, color: Colors.white70) : null,
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD0FD3E),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  _athleteData!.fitnessLevel.toUpperCase(),
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
                 ),
               ),
+              const SizedBox(height: 8),
+              Text(
+                '${_athleteData!.age} yrs • ${_athleteData!.sportPreference}',
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: _athleteData!.profileCompletion / 100,
+                backgroundColor: Colors.grey.shade700,
+                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD0FD3E)),
+                minHeight: 6,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickStartButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () { /* TODO: Navigate to test recording screen */ },
+            icon: const Icon(Icons.videocam_outlined),
+            label: const Text("Start Fitness Test"),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              textStyle: const TextStyle(fontWeight: FontWeight.bold),
             ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () { /* TODO: Navigate to video upload screen */ },
+            icon: const Icon(Icons.upload_file_outlined),
+            label: const Text("Upload Video"),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white,
+              side: const BorderSide(color: Colors.white54),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              textStyle: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPerformanceGrid() {
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      childAspectRatio: 1.6,
+      children: _athleteData!.recentPerformance.entries.map((entry) {
+        const icons = {
+          "Vertical Jump": Icons.arrow_upward_rounded,
+          "Shuttle Run": Icons.shuffle_rounded,
+          "Endurance": Icons.timer_outlined,
+          "Sit-ups (1 min)": Icons.fitness_center,
+        };
+        return PerformanceCard(
+          testName: entry.key,
+          icon: icons[entry.key] ?? Icons.help_outline,
+          performanceData: entry.value,
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildChallengesList() {
+    return Column(
+      children: _athleteData!.ongoingChallenges.map((challenge) {
+        return Card(
+          color: Colors.grey.shade900.withOpacity(0.6),
+          margin: const EdgeInsets.only(bottom: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            title: Text(challenge.title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+            subtitle: Text(challenge.deadline, style: TextStyle(color: Colors.grey.shade400)),
+            trailing: ElevatedButton(
+              onPressed: () { /* TODO: Join challenge */ },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+              ),
+              child: const Text("Join"),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
     );
   }
 }
