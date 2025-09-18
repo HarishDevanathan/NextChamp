@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() { _isLoading = true; });
 
     // IMPORTANT: Make sure this IP is correct and uses dots, not hyphens.
-    const String apiUrl = "http://127.0.0.1:8000/auth/email/login"; 
+    const String apiUrl = "http://54.243.28.56:8000/auth/email/login"; 
 
     try {
       final response = await http.post(

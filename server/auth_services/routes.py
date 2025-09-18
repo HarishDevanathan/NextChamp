@@ -1,9 +1,6 @@
-# In /server/auth_services/routes.py
-
 # --- Standard Imports ---
 import base64
 import os
-import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -44,17 +41,31 @@ class EnvironmentSettings(BaseSettings):
     MAIL_FROM: str
     MAIL_PORT: int
     MAIL_SERVER: str
-    MAIL_STARTTLS: bool
-    MAIL_SSL_TLS: bool
-    USE_CREDENTIALS: bool
-    TEMPLATE_FOLDER: Path
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    USE_CREDENTIALS: bool = True
+    TEMPLATE_FOLDER: Path = Path(__file__).resolve().parent.parent / "email-templates"
+    MONGO_URI: str
+    MONGO_DB_NAME: str
 
     class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
 settings = EnvironmentSettings()
-mail_config = ConnectionConfig(**settings.model_dump())
+
+mail_config = ConnectionConfig(
+    MAIL_USERNAME=settings.MAIL_USERNAME,
+    MAIL_PASSWORD=settings.MAIL_PASSWORD,
+    MAIL_FROM=settings.MAIL_FROM,
+    MAIL_PORT=settings.MAIL_PORT,
+    MAIL_SERVER=settings.MAIL_SERVER,
+    MAIL_FROM_NAME="NextChamp App",
+    MAIL_STARTTLS=settings.MAIL_STARTTLS,
+    MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
+    USE_CREDENTIALS=settings.USE_CREDENTIALS,
+    TEMPLATE_FOLDER=settings.TEMPLATE_FOLDER
+)
 
 # --- Directory Setup for Image Uploads ---
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -103,7 +114,6 @@ async def signup_api(signup: SignupModel):
     
     await db.user.insert_one(user_doc)
     
-    # --- FINAL CORRECTION IS HERE ---
     return {"success": True, "message": "User registered successfully", "userid": str(user_id)}
 
 

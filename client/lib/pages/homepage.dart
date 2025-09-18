@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     // --- CORRECTED URL ---
     // The previous version had a typo with two ports (:8000:8000). This is the correct format.
     // IMPORTANT: Replace with your computer's local network IP address for a real device.
-    const String apiBaseUrl = "http://127.0.0.1:8000";
+    const String apiBaseUrl = "http://54.243.28.56:8000";
     // --- END of URL Correction ---
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
