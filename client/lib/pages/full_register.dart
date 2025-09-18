@@ -2,9 +2,11 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:client/pages/login.dart';
 import 'package:flutter/foundation.dart'; // Required for Uint8List
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';

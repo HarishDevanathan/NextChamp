@@ -24,3 +24,11 @@ class LoginModel(BaseModel):
     email: EmailStr
     pwd: str
 
+class GoogleSignupModel(BaseModel):
+    username: str
+    email: EmailStr
+    dob: str
+    height: str
+    weight: str
+    phoneno: Optional[str] = None
+    profilePic: Optional[str] = None

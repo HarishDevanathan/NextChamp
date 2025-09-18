@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'oauth-454eb.firebasestorage.app',
     measurementId: 'G-YMWBJ7YSWH',
   );
+
 }
