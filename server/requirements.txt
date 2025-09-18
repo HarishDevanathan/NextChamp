@@ -14,4 +14,4 @@ httpx
 itsdangerous
 uvicorn[standard]
 pydantic[email]
-firebase-admin
+google-generativeai
