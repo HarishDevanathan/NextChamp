@@ -2,6 +2,7 @@ import 'package:client/pages/athlete_data.dart';
 import 'package:client/pages/performance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:client/pages/ai_chatbot_page.dart'; // Add this line
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -97,24 +98,24 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
       
-      // --- NEW FLOATING ACTION BUTTON FOR AI CHATBOT ---
+      // ... in HomePageState build method
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Implement the navigation or overlay for your AI chatbot screen.
-          // For now, we'll show a simple snackbar as a placeholder.
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('AI Assistant coming soon!'),
-              backgroundColor: Color.fromARGB(255, 30, 30, 30),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AIChatbotPage(
+                userName: _athleteData?.name ?? 'Athlete', // Pass the user's name
+                userProfilePicUrl: _profilePicUrl, // Pass the user's profile pic URL
+              ),
             ),
           );
         },
-        backgroundColor: const Color(0xFFD0FD3E), // Use your app's primary color
-        foregroundColor: Colors.black, // Color of the icon
-        tooltip: 'AI Assistant', // Shows on long press (good for accessibility)
-        child: const Icon(Icons.smart_toy_outlined), // A suitable icon for an AI bot
+        backgroundColor: const Color(0xFFD0FD3E),
+        foregroundColor: Colors.black,
+        tooltip: 'AI Assistant',
+        child: const Icon(Icons.smart_toy_outlined),
       ),
-      // --- END OF NEW CODE ---
     );
   }
 
