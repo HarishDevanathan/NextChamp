@@ -26,20 +26,20 @@ class _HomePageState extends State<HomePage> {
     // --- CORRECTED URL ---
     // The previous version had a typo with two ports (:8000:8000). This is the correct format.
     // IMPORTANT: Replace with your computer's local network IP address for a real device.
-    const String apiBaseUrl = "http://54.243.28.56:8000";
+    const String apiBaseUrl = "http://127.0.0.1:8000";
     // --- END of URL Correction ---
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+
     final String name = prefs.getString('name') ?? 'Athlete';
     final String? profilePicPath = prefs.getString('profilePic');
-    
+
     if (profilePicPath != null && profilePicPath.isNotEmpty) {
-      _profilePicUrl = apiBaseUrl + profilePicPath; 
+      _profilePicUrl = apiBaseUrl + profilePicPath;
     }
 
-    await Future.delayed(const Duration(seconds: 1)); 
-    
+    await Future.delayed(const Duration(seconds: 1));
+
     final mockData = AthleteData(
       name: name,
       age: 17,
@@ -48,10 +48,26 @@ class _HomePageState extends State<HomePage> {
       profileCompletion: 80,
       fitnessLevel: "Intermediate",
       recentPerformance: {
-        "Vertical Jump": Performance(score: "65 cm", bestScore: "68 cm", isImproving: true),
-        "Shuttle Run": Performance(score: "9.8 s", bestScore: "9.5 s", isImproving: false),
-        "Endurance": Performance(score: "12:30 min", bestScore: "12:15 min", isImproving: false),
-        "Sit-ups (1 min)": Performance(score: "45 reps", bestScore: "42 reps", isImproving: true),
+        "Vertical Jump": Performance(
+          score: "65 cm",
+          bestScore: "68 cm",
+          isImproving: true,
+        ),
+        "Shuttle Run": Performance(
+          score: "9.8 s",
+          bestScore: "9.5 s",
+          isImproving: false,
+        ),
+        "Endurance": Performance(
+          score: "12:30 min",
+          bestScore: "12:15 min",
+          isImproving: false,
+        ),
+        "Sit-ups (1 min)": Performance(
+          score: "45 reps",
+          bestScore: "42 reps",
+          isImproving: true,
+        ),
       },
       ongoingChallenges: [
         Challenge(title: "National Endurance Test", deadline: "Closes Sept 30"),
@@ -69,10 +85,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      
+
       // --- BODY OF THE PAGE (UNCHANGED) ---
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFFD0FD3E)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFD0FD3E)),
+            )
           : CustomScrollView(
               slivers: [
                 _buildSliverAppBar(),
@@ -97,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-      
+
       // ... in HomePageState build method
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -105,8 +123,10 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => AIChatbotPage(
-                userName: _athleteData?.name ?? 'Athlete', // Pass the user's name
-                userProfilePicUrl: _profilePicUrl, // Pass the user's profile pic URL
+                userName:
+                    _athleteData?.name ?? 'Athlete', // Pass the user's name
+                userProfilePicUrl:
+                    _profilePicUrl, // Pass the user's profile pic URL
               ),
             ),
           );
@@ -151,8 +171,12 @@ class _HomePageState extends State<HomePage> {
         CircleAvatar(
           radius: 40,
           backgroundColor: Colors.grey.shade800,
-          backgroundImage: _profilePicUrl != null ? NetworkImage(_profilePicUrl!) : null,
-          child: _profilePicUrl == null ? const Icon(Icons.person, size: 40, color: Colors.white70) : null,
+          backgroundImage: _profilePicUrl != null
+              ? NetworkImage(_profilePicUrl!)
+              : null,
+          child: _profilePicUrl == null
+              ? const Icon(Icons.person, size: 40, color: Colors.white70)
+              : null,
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -161,14 +185,21 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFD0FD3E),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   _athleteData!.fitnessLevel.toUpperCase(),
-                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -180,7 +211,9 @@ class _HomePageState extends State<HomePage> {
               LinearProgressIndicator(
                 value: _athleteData!.profileCompletion / 100,
                 backgroundColor: Colors.grey.shade700,
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD0FD3E)),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color(0xFFD0FD3E),
+                ),
                 minHeight: 6,
                 borderRadius: BorderRadius.circular(3),
               ),
@@ -196,12 +229,16 @@ class _HomePageState extends State<HomePage> {
       children: [
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () { /* TODO: Navigate to test recording screen */ },
+            onPressed: () {
+              /* TODO: Navigate to test recording screen */
+            },
             icon: const Icon(Icons.videocam_outlined),
             label: const Text("Start Fitness Test"),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               textStyle: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -209,14 +246,18 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(width: 12),
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: () { /* TODO: Navigate to video upload screen */ },
+            onPressed: () {
+              /* TODO: Navigate to video upload screen */
+            },
             icon: const Icon(Icons.upload_file_outlined),
             label: const Text("Upload Video"),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
               side: const BorderSide(color: Colors.white54),
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               textStyle: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -255,13 +296,29 @@ class _HomePageState extends State<HomePage> {
         return Card(
           color: Colors.grey.shade900.withOpacity(0.6),
           margin: const EdgeInsets.only(bottom: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            title: Text(challenge.title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-            subtitle: Text(challenge.deadline, style: TextStyle(color: Colors.grey.shade400)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            title: Text(
+              challenge.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            subtitle: Text(
+              challenge.deadline,
+              style: TextStyle(color: Colors.grey.shade400),
+            ),
             trailing: ElevatedButton(
-              onPressed: () { /* TODO: Join challenge */ },
+              onPressed: () {
+                /* TODO: Join challenge */
+              },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
               ),
@@ -276,7 +333,11 @@ class _HomePageState extends State<HomePage> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 }

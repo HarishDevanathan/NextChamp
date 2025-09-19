@@ -47,6 +47,8 @@ class EnvironmentSettings(BaseSettings):
     TEMPLATE_FOLDER: Path = Path(__file__).resolve().parent.parent / "email-templates"
     MONGO_URI: str
     MONGO_DB_NAME: str
+    GOOGLE_API_KEY : str
+    BOT_API_KEY: str
 
     class Config:
         env_file = ".env"
