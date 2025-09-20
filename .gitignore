@@ -3,5 +3,6 @@ server/__pycache__
 server/auth_services/__pycache__
 server/db/__pycache__
 server/bot_services/__pycache__
-.venv
-.venv311
+server/test_services/__pycache__
+server/venv
+server/venv311

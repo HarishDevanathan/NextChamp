@@ -16,3 +16,7 @@ uvicorn[standard]
 pydantic[email]
 firebase_admin
 google-generativeai
+opencv-python
+numpy
+mediapipe
+reportlab

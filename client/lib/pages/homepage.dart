@@ -17,13 +17,18 @@ class _HomePageState extends State<HomePage> {
   AthleteData? _athleteData;
   String? _profilePicUrl;
   bool _isLoading = true;
+  String? userId;
+  int? age, height, weight;
+  String? gender, phoneNo;
+  double? bmi;
 
   // --- IMPORTANT: CORRECTED URL FOR BACKEND ---
   // Replace with your computer's local network IP address if running on a real device.
   // For Android emulator, use "http://10.0.2.2:8000"
   // For iOS simulator or web/desktop, use "http://127.0.0.1:8000"
   // If running backend on a different machine, use that machine's IP.
-  final String apiBaseUrl = "http://127.0.0.1:8000"; // Example for local dev/emulator
+  final String apiBaseUrl =
+      "http://127.0.0.1:8000"; // Example for local dev/emulator
   // --- END of URL Correction ---
 
   @override
@@ -35,19 +40,28 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadUserData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    userId = prefs.getString('userid') ?? 'user123';
     final String name = prefs.getString('name') ?? 'Athlete';
     final String? profilePicPath = prefs.getString('profilePic');
+    age = prefs.getInt('age');
+    height = prefs.getInt('height');
+    weight = prefs.getInt('weight');
+    gender = prefs.getString('gender');
+    phoneNo = prefs.getString('phoneNo');
+    bmi = prefs.getDouble('bmi');
 
     if (profilePicPath != null && profilePicPath.isNotEmpty) {
-      _profilePicUrl = apiBaseUrl + profilePicPath; // Assuming profile pics are also served by FastAPI
+      _profilePicUrl =
+          apiBaseUrl +
+          profilePicPath; // Assuming profile pics are also served by FastAPI
     }
 
     await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
 
     final mockData = AthleteData(
       name: name,
-      age: 17,
-      gender: "Male",
+      age: age ?? 17,
+      gender: gender ?? 'Male',
       sportPreference: "Athletics",
       profileCompletion: 80,
       fitnessLevel: "Intermediate",
@@ -125,6 +139,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => AIChatbotPage(
+                userId: userId ?? 'user123',
                 userName: _athleteData?.name ?? 'Athlete',
                 userProfilePicUrl: _profilePicUrl,
               ),
@@ -248,7 +263,13 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UploadVideoPage(apiBaseUrl: apiBaseUrl),
+                  builder: (context) => UploadVideoPage(
+                    apiBaseUrl: apiBaseUrl,
+                    userId: userId ?? 'user123',
+                    height: height ?? 180,
+                    weight: weight ?? 60,
+                    age: age ?? 17,
+                  ),
                 ),
               );
             },

@@ -54,6 +54,15 @@ class _LoginPageState extends State<LoginPage> {
           await prefs.setString('name', responseBody['name']);
           await prefs.setString('email', responseBody['email']);
           await prefs.setString('profilePic', responseBody['profilePic'] ?? '');
+          await prefs.setInt('age', int.parse(responseBody['age']));
+          await prefs.setInt('height', int.parse(responseBody['height']));
+          await prefs.setInt('weight', int.parse(responseBody['weight']));
+          await prefs.setString('gender', responseBody['gender'] ?? 'Male');
+          await prefs.setString(
+            'phoneNo',
+            responseBody['phoneno'] ?? '9988776655',
+          );
+          await prefs.setDouble('bmi', double.parse(responseBody['bmi']));
           // --- END SAVING DATA ---
 
           if (mounted) {

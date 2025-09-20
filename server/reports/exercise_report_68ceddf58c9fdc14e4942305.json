@@ -1,0 +1,3551 @@
+{
+  "user_profile": {
+    "name": "Harish",
+    "age": 0,
+    "height": 0,
+    "weight": 0,
+    "bmi": 0,
+    "fitness_level": "Underweight"
+  },
+  "exercise_details": {
+    "type": "SQUATS",
+    "duration": 90.29335427284241,
+    "date": "2025-09-20T22:31:41.591903"
+  },
+  "performance": {
+    "overall_score": 91.02578814336475,
+    "form_accuracy": 59.71428571428572,
+    "grade": "A",
+    "rep_count": 10
+  },
+  "analysis": {
+    "summary": "Exercise: Squats.Score: 91.0/100.Form Accuracy: 59.7%Key Issues: Going too deep! Control the descent. Don't lean forward too much. Keep knees aligned with toes. Descending... keep control!, Drive thro...",
+    "key_findings": [
+      "AI-identified form inconsistencies",
+      "Performance analysis completed"
+    ],
+    "recommendations": [
+      "Follow AI-suggested improvements",
+      "Practice with guided feedback"
+    ]
+  },
+  "metrics": {
+    "knee_angle": 141.1297113299516,
+    "torso_angle": 133.65128251392727,
+    "alignment_score": 0.8144915650520509
+  },
+  "form_errors": {
+    "knee_alignment": 281,
+    "depth_issues": 146,
+    "torso_lean": 135,
+    "elbow_position": 0,
+    "body_alignment": 0
+  },
+  "technical_details": {
+    "total_frames": 1050,
+    "correct_frames": 627
+  },
+  "full_feedback_history": [
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Good depth! Now drive up!"
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Going too deep! Control the descent.",
+      "Chest up! Don't lean forward too much.",
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes."
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Drive through your heels!"
+    ],
+    [
+      "Keep knees aligned with toes.",
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Descending... keep control!"
+    ],
+    [
+      "Drive through your heels!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Rep complete! Great job!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ],
+    [
+      "Excellent form! Keep going strong!"
+    ]
+  ]
+}

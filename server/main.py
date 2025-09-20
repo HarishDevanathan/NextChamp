@@ -19,6 +19,7 @@ from fastapi.staticfiles import StaticFiles          # 2. IMPORT THIS
 from pathlib import Path
 from auth_services.routes import auth_engine
 from test_services.routes import router
+from bot_services.routes import bot_engine
 
 app = FastAPI()
 
@@ -42,6 +43,7 @@ app.mount(
 # 5. ROUTERS
 app.include_router(auth_engine)
 app.include_router(router)
+app.include_router(bot_engine)
 
 # 6. ROOT
 @app.get("/")

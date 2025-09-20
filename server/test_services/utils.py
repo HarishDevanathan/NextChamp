@@ -732,7 +732,7 @@ with targeted improvement focusing on {', '.join([f.split()[0] for f in key_find
             "raw_report_data": report_json_data
         }
 
-        if results_collection:
+        if results_collection is not None:
             try:
                 await results_collection.insert_one(db_record)
                 print(f"✅ Report saved to MongoDB with _id: {report_object_id}")
