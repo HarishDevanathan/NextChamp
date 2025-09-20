@@ -18,6 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware   # 1. IMPORT THIS
 from fastapi.staticfiles import StaticFiles          # 2. IMPORT THIS
 from pathlib import Path
 from auth_services.routes import auth_engine
+from test_services.routes import router
 
 app = FastAPI()
 
@@ -40,6 +41,7 @@ app.mount(
 
 # 5. ROUTERS
 app.include_router(auth_engine)
+app.include_router(router)
 
 # 6. ROOT
 @app.get("/")

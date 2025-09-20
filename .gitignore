@@ -4,3 +4,4 @@ server/auth_services/__pycache__
 server/db/__pycache__
 server/bot_services/__pycache__
 .venv
+.venv311

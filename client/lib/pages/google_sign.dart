@@ -102,8 +102,7 @@ class _GoogleSignUpPageState extends State<GoogleSignUpPage> {
           data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
               primary: Color(0xFFD0FD3E), onPrimary: Colors.black, onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF1E1E1E),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF1E1E1E)),
           ),
           child: child!,
         );

@@ -169,7 +169,7 @@ class _AIChatbotPageState extends State<AIChatbotPage> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
                     child: Text(
-                      "${displayedUserName} • ${DateFormat('HH:mm').format(message.timestamp)}", // Use displayedUserName
+                      "$displayedUserName • ${DateFormat('HH:mm').format(message.timestamp)}", // Use displayedUserName
                       style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
                     ),
                   )

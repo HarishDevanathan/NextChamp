@@ -169,8 +169,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(primary: Color(0xFFD0FD3E), onPrimary: Colors.black, onSurface: Colors.white),
-            dialogBackgroundColor: const Color(0xFF1E1E1E),
+            colorScheme: const ColorScheme.dark(primary: Color(0xFFD0FD3E), onPrimary: Colors.black, onSurface: Colors.white), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF1E1E1E)),
           ),
           child: child!,
         );

@@ -49,6 +49,7 @@ class EnvironmentSettings(BaseSettings):
     MONGO_DB_NAME: str
     GOOGLE_API_KEY : str
     BOT_API_KEY: str
+    HUGGING_FACE: str
 
     class Config:
         env_file = ".env"

@@ -2,7 +2,9 @@ import 'package:client/pages/athlete_data.dart';
 import 'package:client/pages/performance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:client/pages/ai_chatbot_page.dart'; // Add this line
+import 'package:client/pages/ai_chatbot_page.dart';
+import 'package:client/pages/upload_video_page.dart'; // Import the new page
+import 'dart:convert'; // Add this for json.decode if you use it in _loadUserData for more complex API calls
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +18,14 @@ class _HomePageState extends State<HomePage> {
   String? _profilePicUrl;
   bool _isLoading = true;
 
+  // --- IMPORTANT: CORRECTED URL FOR BACKEND ---
+  // Replace with your computer's local network IP address if running on a real device.
+  // For Android emulator, use "http://10.0.2.2:8000"
+  // For iOS simulator or web/desktop, use "http://127.0.0.1:8000"
+  // If running backend on a different machine, use that machine's IP.
+  final String apiBaseUrl = "http://127.0.0.1:8000"; // Example for local dev/emulator
+  // --- END of URL Correction ---
+
   @override
   void initState() {
     super.initState();
@@ -23,22 +33,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadUserData() async {
-    // --- CORRECTED URL ---
-    // The previous version had a typo with two ports (:8000:8000). This is the correct format.
-    // IMPORTANT: Replace with your computer's local network IP address for a real device.
-    const String apiBaseUrl = "http://127.0.0.1:8000";
-    // --- END of URL Correction ---
-
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     final String name = prefs.getString('name') ?? 'Athlete';
     final String? profilePicPath = prefs.getString('profilePic');
 
     if (profilePicPath != null && profilePicPath.isNotEmpty) {
-      _profilePicUrl = apiBaseUrl + profilePicPath;
+      _profilePicUrl = apiBaseUrl + profilePicPath; // Assuming profile pics are also served by FastAPI
     }
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
 
     final mockData = AthleteData(
       name: name,
@@ -86,7 +90,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.black,
 
-      // --- BODY OF THE PAGE (UNCHANGED) ---
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFFD0FD3E)),
@@ -116,17 +119,14 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-      // ... in HomePageState build method
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => AIChatbotPage(
-                userName:
-                    _athleteData?.name ?? 'Athlete', // Pass the user's name
-                userProfilePicUrl:
-                    _profilePicUrl, // Pass the user's profile pic URL
+                userName: _athleteData?.name ?? 'Athlete',
+                userProfilePicUrl: _profilePicUrl,
               ),
             ),
           );
@@ -138,9 +138,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  // --- All other UI Builder Methods (_buildSliverAppBar, etc.) are unchanged ---
-  // They are omitted here for brevity, but you should keep them in your code.
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
@@ -230,7 +227,7 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () {
-              /* TODO: Navigate to test recording screen */
+              /* TODO: Navigate to test recording screen or integrate directly here */
             },
             icon: const Icon(Icons.videocam_outlined),
             label: const Text("Start Fitness Test"),
@@ -247,7 +244,13 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           child: OutlinedButton.icon(
             onPressed: () {
-              /* TODO: Navigate to video upload screen */
+              // Navigate to the UploadVideoPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UploadVideoPage(apiBaseUrl: apiBaseUrl),
+                ),
+              );
             },
             icon: const Icon(Icons.upload_file_outlined),
             label: const Text("Upload Video"),
