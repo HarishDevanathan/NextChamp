@@ -384,7 +384,7 @@ class ExerciseAnalyzer:
 
     def get_ai_summary(self, report_data):
         try:
-            hf_token = os.getenv('HUGGING_FACE')
+            hf_token = "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"
             if hf_token:
                 summary = self._try_huggingface_api(report_data, hf_token)
                 if summary:
@@ -396,7 +396,7 @@ class ExerciseAnalyzer:
 
     def _try_huggingface_api(self, report_data, token):
         try:
-            api_url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
+            api_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-large"
             headers = {"Authorization": f"Bearer {token}"}
 
             exercise_name = self.exercise_type.name.replace('_', ' ').title()
@@ -416,7 +416,10 @@ Provide:
 Keep response concise and professional.
 """
             payload = {"inputs": prompt, "parameters": {"max_length": 200}}
-            response = requests.post(api_url, headers=headers, json=payload, timeout=10)
+            response = requests.post(api_url, headers=headers, json=payload, timeout=60)
+            print("Response",response)
+            result = response.json()           # convert response to JSON
+            print("JSON Result:", result)   
 
             if response.status_code == 200:
                 result = response.json()
@@ -428,45 +431,60 @@ Keep response concise and professional.
             print(f"Hugging Face API failed: {e}")
         return None
 
-    def _parse_ai_response(self, ai_result):
+    def _parse_ai_response(self, generated_text):
         try:
-            if isinstance(ai_result, list) and len(ai_result) > 0:
-                generated_text = ai_result[0].get('summary_text', '')
-            elif isinstance(ai_result, dict):
-                generated_text = ai_result.get('summary_text', str(ai_result))
-            else:
-                generated_text = str(ai_result)
-
+            # Limit summary to first 200 chars
+            print(generated_text)
             summary = generated_text[:200] + "..." if len(generated_text) > 200 else generated_text
 
+            # Split lines
+            lines = [line.strip("• ").strip() for line in generated_text.split("\n") if line.strip()]
+            
             key_findings = []
             recommendations = []
-            
-            if "key findings:" in generated_text.lower():
-                start = generated_text.lower().find("key findings:") + len("key findings:")
-                end = generated_text.lower().find("recommendations:")
-                if end == -1: end = len(generated_text)
-                findings_section = generated_text[start:end].strip()
-                key_findings = [f.strip() for f in findings_section.split('\n') if f.strip() and f.strip().startswith(('•', '1.', '2.', '3.'))]
-                if not key_findings: key_findings = [f.strip() for f in findings_section.split('.') if f.strip()]
 
-            if "recommendations:" in generated_text.lower():
-                start = generated_text.lower().find("recommendations:") + len("recommendations:")
-                recommendations_section = generated_text[start:].strip()
-                recommendations = [r.strip() for r in recommendations_section.split('\n') if r.strip() and r.strip().startswith(('•', '1.', '2.', '3.'))]
-                if not recommendations: recommendations = [r.strip() for r in recommendations_section.split('.') if r.strip()]
+            # Attempt to detect sections
+            current_section = None
+            for line in lines:
+                lower = line.lower()
+                if "key findings" in lower:
+                    current_section = "key_findings"
+                    continue
+                elif "recommendations" in lower:
+                    current_section = "recommendations"
+                    continue
 
-            if not key_findings: key_findings = ["AI-identified form inconsistencies", "Performance analysis completed"]
-            if not recommendations: recommendations = ["Follow AI-suggested improvements", "Practice with guided feedback"]
+                if current_section == "key_findings":
+                    key_findings.append(line)
+                elif current_section == "recommendations":
+                    recommendations.append(line)
+
+            # If headings missing, split by bullets or numbers
+            if not key_findings:
+                key_findings = [line for line in lines if line and line[0].isdigit() or line.startswith("•")][:3]
+            if not recommendations:
+                recommendations = [line for line in lines if line and line[0].isdigit() or line.startswith("•")][-3:]
+
+            # Final fallback
+            if not key_findings:
+                key_findings = ["Form inconsistencies detected", "Performance analysis completed"]
+            if not recommendations:
+                recommendations = ["Follow suggested improvements", "Practice with guided feedback"]
 
             return {
-                'summary': summary,
-                'key_findings': key_findings,
-                'recommendations': recommendations
+                "summary": summary,
+                "key_findings": key_findings,
+                "recommendations": recommendations
             }
+
         except Exception as e:
             print(f"Error parsing AI response: {e}")
-            return None
+            return {
+                "summary": generated_text,
+                "key_findings": ["Form inconsistencies detected"],
+                "recommendations": ["Follow suggested improvements"]
+            }
+
 
     def _generate_enhanced_rule_based_summary(self, report_data):
         exercise_name = self.exercise_type.name.replace('_', ' ').title()
@@ -719,10 +737,11 @@ with targeted improvement focusing on {', '.join([f.split()[0] for f in key_find
             print(f"❌ Failed to generate PDF report: {pdf_filename}")
 
         db_record = {
-            "testId": str(report_object_id),
+            "_id": str(report_object_id),
+            "testId": str(self.exercise_type.value),
             "userId": self.user_profile.user_id,
             "timestamp": datetime.now(),
-            "score": overall_score,
+            "score": int(overall_score),
             "videoPath": analyzed_video_url,
             "reportPath": pdf_web_path,
             "feedback": {

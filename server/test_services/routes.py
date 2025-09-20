@@ -228,7 +228,8 @@ async def analyze_test(
             pdf_path=pdf_path,
             overall_score=report_data['performance']['overall_score'],
             rep_count=report_data['performance']['rep_count'],
-            form_accuracy=report_data['performance']['form_accuracy']
+            form_accuracy=report_data['performance']['form_accuracy'],
+            video_path=video_web_path
         )
         
     except Exception as e:
