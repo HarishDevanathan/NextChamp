@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscureText = true; // Add this line for password visibility
 
   Future<void> _loginUser() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -191,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 20),
                         TextField(
                           controller: _passwordController,
-                          obscureText: true,
+                          obscureText: _obscureText, // Use the state variable here
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             hintText: 'Password',
@@ -205,6 +206,19 @@ class _LoginPageState extends State<LoginPage> {
                             prefixIcon: const Icon(
                               Icons.lock_outline,
                               color: Colors.white70,
+                            ),
+                            suffixIcon: IconButton( // Add suffix icon
+                              icon: Icon(
+                                _obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.white70,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
                             ),
                           ),
                         ),

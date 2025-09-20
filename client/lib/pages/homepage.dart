@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   AthleteData? _athleteData;
   String? _profilePicUrl;
   bool _isLoading = true;
-  String? userId;
+  String? userId , name;
   int? age, height, weight;
   String? gender, phoneNo;
   double? bmi;
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     userId = prefs.getString('userid') ?? 'user123';
-    final String name = prefs.getString('name') ?? 'Athlete';
+    name = prefs.getString('name') ?? 'Athlete';
     final String? profilePicPath = prefs.getString('profilePic');
     age = prefs.getInt('age');
     height = prefs.getInt('height');
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
 
     final mockData = AthleteData(
-      name: name,
+      name: name ?? 'Athlete',
       age: age ?? 17,
       gender: gender ?? 'Male',
       sportPreference: "Athletics",
@@ -269,6 +269,7 @@ class _HomePageState extends State<HomePage> {
                     height: height ?? 180,
                     weight: weight ?? 60,
                     age: age ?? 17,
+                    name: name ?? 'Athlete',
                   ),
                 ),
               );

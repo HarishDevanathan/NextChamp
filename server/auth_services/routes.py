@@ -170,10 +170,10 @@ async def login_api(login: LoginModel):
         "success": True, "message": "Login successful", "userid": str(user["_id"]), "name": user["name"],
         "email": user["email"], "age": user.get("age"), "height": user.get("height"),
         "weight": user.get("weight"), "bmi": user.get("bmi"), "phoneno": user.get("phoneno", ""),
-        "profilePic": user.get("profilePic", "") , "gender" : user.get("gender" , "")
+        "profilePic": user.get("profilePic", "") , "gender" : user.get("gender" , "Male")
     }
     
-    print(response)
+    #print(response)
 
     return response
 

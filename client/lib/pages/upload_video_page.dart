@@ -4,7 +4,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:video_player/video_player.dart';
 import 'dart:convert';
-// Removed: import 'package:file_selector/file_selector.dart'; // Import for desktop file picking
+import 'package:chewie/chewie.dart';
+import 'package:flutter/foundation.dart' show kIsWeb; // Import kIsWeb for platform checks
+import 'dart:io'; // Only used conditionally for non-web platforms
 
 // Enum for exercise types, matching your Python backend
 enum ExerciseType {
@@ -24,6 +26,7 @@ class UploadVideoPage extends StatefulWidget {
   final int height;
   final int weight;
   final int age;
+  final String name;
 
   const UploadVideoPage({
     super.key,
@@ -32,6 +35,7 @@ class UploadVideoPage extends StatefulWidget {
     required this.height,
     required this.weight,
     required this.age,
+    required this.name,
   });
 
   @override
@@ -43,71 +47,126 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
   ExerciseType? _selectedExercise;
   bool _isLoading = false;
   String? _analysisMessage;
+  VideoPlayerController? _localVideoController;
+  ChewieController? _localChewieController;
   VideoPlayerController? _analyzedVideoController;
+  ChewieController? _analyzedChewieController;
   String? _testId;
   Map<String, dynamic>? _reportData;
-
-  // User profile fields
-  final TextEditingController _userIdController = TextEditingController();
-  final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _heightController = TextEditingController();
-  final TextEditingController _weightController = TextEditingController();
+  String? _analyzedVideoPathFromServer; // Stores the path like "analyzed_videos\..."
 
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    // Initialize user data from widget properties
-    _userIdController.text = widget.userId;
-    _ageController.text = widget.age.toString();
-    _heightController.text = widget.height.toString();
-    _weightController.text = widget.weight.toString();
   }
+
+  // Helper to construct the full analyzed video URL
+  String? _getFullAnalyzedVideoUrl() {
+    if (_analyzedVideoPathFromServer == null || _analyzedVideoPathFromServer!.isEmpty) {
+      return null;
+    }
+    // Normalize path separators from Windows-style '\' to URL-friendly '/'
+    String normalizedPath = _analyzedVideoPathFromServer!.replaceAll('\\', '/');
+    // Ensure the base URL does not end with a slash and the path does not start with one, or vice-versa
+    // This logic ensures a correct URL even if apiBaseUrl already has a trailing slash or not.
+    String baseUrl = widget.apiBaseUrl.endsWith('/') ? widget.apiBaseUrl.substring(0, widget.apiBaseUrl.length - 1) : widget.apiBaseUrl;
+    String path = normalizedPath.startsWith('/') ? normalizedPath.substring(1) : normalizedPath;
+
+    return '$baseUrl/$path';
+  }
+
 
   Future<void> _pickVideo(ImageSource source) async {
     XFile? video;
     if (source == ImageSource.camera) {
       video = await _picker.pickVideo(source: ImageSource.camera);
     } else {
-      // Use image_picker for gallery on all platforms
       video = await _picker.pickVideo(source: ImageSource.gallery);
     }
+
+    if (!mounted) return;
 
     setState(() {
       _videoFile = video;
       _analysisMessage = null;
-      _analyzedVideoController?.dispose();
-      _analyzedVideoController = null;
       _testId = null;
       _reportData = null;
+      _analyzedVideoPathFromServer = null;
+
+      _localChewieController?.dispose();
+      _localVideoController?.dispose();
+      _localVideoController = null;
+      _localChewieController = null;
+
+      _analyzedChewieController?.dispose();
+      _analyzedVideoController?.dispose();
+      _analyzedVideoController = null;
+      _analyzedChewieController = null;
     });
+
+    if (_videoFile != null) {
+      // --- Platform-specific video controller initialization ---
+      if (kIsWeb) {
+        // For web, use VideoPlayerController.networkUrl with the XFile's path
+        _localVideoController = VideoPlayerController.networkUrl(Uri.parse(_videoFile!.path));
+      } else {
+        // For native platforms, use VideoPlayerController.file with dart:io.File
+        _localVideoController = VideoPlayerController.file(File(_videoFile!.path));
+      }
+      // --- End Platform-specific initialization ---
+
+      try {
+        await _localVideoController!.initialize();
+        if (!mounted) return;
+        setState(() {
+          _localChewieController = ChewieController(
+            videoPlayerController: _localVideoController!,
+            autoPlay: false,
+            looping: false,
+            aspectRatio: _localVideoController!.value.aspectRatio,
+          );
+        });
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error initializing local video: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _videoFile = null;
+        });
+      }
+    }
   }
 
-
   Future<void> _uploadVideo() async {
-    if (_videoFile == null ||
-        _selectedExercise == null ||
-        _userIdController.text.isEmpty) {
+    if (_videoFile == null || _selectedExercise == null) {
+      if (!mounted) return;
       setState(() {
-        _analysisMessage =
-            "Please select a video, exercise type, and enter a user ID.";
+        _analysisMessage = "Please select a video and an exercise type.";
       });
       return;
     }
 
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _analysisMessage = "Uploading and analyzing video...";
-      _analyzedVideoController?.dispose();
-      _analyzedVideoController = null;
+      _analyzedVideoPathFromServer = null;
       _testId = null;
       _reportData = null;
+
+      _analyzedChewieController?.dispose();
+      _analyzedVideoController?.dispose();
+      _analyzedVideoController = null;
+      _analyzedChewieController = null;
     });
 
     try {
-      // Read video bytes (works on Web & mobile)
       Uint8List videoBytes = await _videoFile!.readAsBytes();
 
       var request = http.MultipartRequest(
@@ -123,18 +182,16 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
         ),
       );
 
-      // Add form fields
-      request.fields['user_id'] = _userIdController.text;
+      request.fields['user_id'] = widget.userId;
       request.fields['exercise_type'] = _selectedExercise!.name;
-      request.fields['user_name'] = _userNameController.text;
-      request.fields['age'] =
-          _ageController.text.isEmpty ? '0' : _ageController.text;
-      request.fields['height'] =
-          _heightController.text.isEmpty ? '0' : _heightController.text;
-      request.fields['weight'] =
-          _weightController.text.isEmpty ? '0' : _weightController.text;
+      request.fields['age'] = widget.age.toString();
+      request.fields['height'] = widget.height.toString();
+      request.fields['weight'] = widget.weight.toString();
+      request.fields['name'] = widget.name;
 
       var response = await request.send();
+
+      if (!mounted) return;
 
       if (response.statusCode == 200) {
         final responseData = await http.Response.fromStream(response);
@@ -145,8 +202,8 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
             _analysisMessage = jsonResponse['message'] ?? "Analysis complete.";
             _testId = jsonResponse['test_id'];
             _reportData = jsonResponse['report_data'];
+            _analyzedVideoPathFromServer = jsonResponse['analyzed_video_url'];
 
-            // Display results summary
             if (_reportData != null) {
               final performance = _reportData!['performance'];
               _analysisMessage =
@@ -176,9 +233,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
         });
       } else {
         final errorBody = await http.Response.fromStream(response);
+        if (!mounted) return;
         setState(() {
-          _analysisMessage =
-              "Error: ${response.statusCode} - ${errorBody.body}";
+          _analysisMessage = "Error: ${response.statusCode} - ${errorBody.body}";
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Upload failed: ${response.statusCode}'),
@@ -189,6 +246,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _analysisMessage = "An error occurred: $e";
         ScaffoldMessenger.of(context).showSnackBar(
@@ -200,20 +258,125 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
         );
       });
     } finally {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
     }
   }
 
+  Future<void> _viewLocalVideo() async {
+    if (_localChewieController == null || !_localVideoController!.value.isInitialized) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No uploaded video available to view or video not initialized.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+    _showVideoPlayerDialog(_localChewieController!, 'Uploaded Video');
+  }
+
+  Future<void> _viewAnalyzedOrLocalVideo() async {
+    final String? fullAnalyzedUrl = _getFullAnalyzedVideoUrl();
+
+    if (fullAnalyzedUrl != null) {
+      // Play analyzed video from constructed URL
+      _analyzedChewieController?.dispose();
+      _analyzedVideoController?.dispose();
+      _analyzedVideoController = null;
+      _analyzedChewieController = null;
+
+      _analyzedVideoController = VideoPlayerController.networkUrl(
+        Uri.parse(fullAnalyzedUrl),
+      );
+      try {
+        await _analyzedVideoController!.initialize();
+        if (!mounted) return;
+        setState(() {
+          _analyzedChewieController = ChewieController(
+            videoPlayerController: _analyzedVideoController!,
+            autoPlay: true,
+            looping: true,
+            aspectRatio: _analyzedVideoController!.value.aspectRatio,
+          );
+        });
+        _showVideoPlayerDialog(_analyzedChewieController!, 'Analyzed Video');
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error playing analyzed video from URL "$fullAnalyzedUrl": $e. Ensure backend is serving this path.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // Fallback to local video if analyzed video fails
+        _viewLocalVideo();
+      }
+    } else if (_localChewieController != null && _localVideoController!.value.isInitialized) {
+      // Fallback to playing the locally uploaded video if analysis is not complete
+      _showVideoPlayerDialog(_localChewieController!, 'Uploaded Video');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No video available to view.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
+  void _showVideoPlayerDialog(ChewieController controller, String title) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppBar(
+                title: Text(
+                  title,
+                  style: const TextStyle(color: Color(0xFFD0FD3E)),
+                ),
+                backgroundColor: Colors.black,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Icons.close, color: Color(0xFFD0FD3E)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    controller.pause();
+                  },
+                ),
+              ),
+              if (controller.videoPlayerController.value.isInitialized)
+                AspectRatio(
+                  aspectRatio: controller.videoPlayerController.value.aspectRatio,
+                  child: Chewie(controller: controller),
+                )
+              else
+                const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(color: Color(0xFFD0FD3E)),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
+    _localChewieController?.dispose();
+    _localVideoController?.dispose();
+    _analyzedChewieController?.dispose();
     _analyzedVideoController?.dispose();
-    _userIdController.dispose();
-    _userNameController.dispose();
-    _ageController.dispose();
-    _heightController.dispose();
-    _weightController.dispose();
     super.dispose();
   }
 
@@ -221,170 +384,126 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload Video for Analysis'),
+        title: const Text(
+          'AI Fitness Coach',
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.black,
         foregroundColor: const Color(0xFFD0FD3E),
+        centerTitle: true,
+        elevation: 0,
       ),
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildUserProfileSection(),
-            const SizedBox(height: 20),
-            _buildExerciseTypeSelector(),
-            const SizedBox(height: 20),
-            _buildVideoSelectionButtons(),
-            _videoFile != null
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: Text(
-                      'Selected Video: ${_videoFile!.name}',
-                      style: const TextStyle(
-                          color: Colors.white70, fontStyle: FontStyle.italic),
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _isLoading ? null : _uploadVideo,
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.black,
-                        strokeWidth: 3,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1A1A1A),
+              Colors.black,
+              Color(0xFF0A0A0A),
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildExerciseTypeSelector(),
+              const SizedBox(height: 30),
+              _buildVideoSelectionButtons(),
+              const SizedBox(height: 20),
+              if (_videoFile != null && _localChewieController != null && _localVideoController!.value.isInitialized)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: ElevatedButton.icon(
+                    onPressed: _viewLocalVideo,
+                    icon: const Icon(Icons.play_arrow_outlined, size: 26),
+                    label: const Text('View Uploaded Video'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    )
-                  : const Icon(Icons.cloud_upload_outlined),
-              label: Text(_isLoading ? "Analyzing..." : "Analyze Video"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD0FD3E),
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            if (_analysisMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade800,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: _isLoading ? Colors.white30 : const Color(0xFFD0FD3E),
-                      width: 1,
+                      textStyle: const TextStyle(
+                        fontSize: 17,
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w600,
+                      ),
+                      elevation: 5,
                     ),
                   ),
+                ),
+              if (_videoFile != null && (_localVideoController == null || !_localVideoController!.value.isInitialized))
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: Text(
-                    _analysisMessage!,
-                    style: TextStyle(
-                      color: _isLoading ? Colors.white70 : Colors.white,
+                    'Selected Video: ${_videoFile!.name} (Initializing...)',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontStyle: FontStyle.italic,
                       fontSize: 16,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
+              const SizedBox(height: 30),
+              ElevatedButton.icon(
+                onPressed: _isLoading ? null : _uploadVideo,
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                          strokeWidth: 3,
+                        ),
+                      )
+                    : const Icon(Icons.fitness_center, size: 28),
+                label: Text(
+                  _isLoading ? "Analyzing..." : "Analyze Performance",
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD0FD3E),
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Montserrat',
+                  ),
+                  elevation: 8,
+                ),
               ),
-            if (_reportData != null && !_isLoading)
-              _buildReportDisplaySection(),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildUserProfileSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'User Profile:',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+              if (_analysisMessage != null && !_isLoading && _reportData == null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Text(
+                    _analysisMessage!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 16,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                ),
+
+              if (_reportData != null && !_isLoading)
+                _buildReportDisplaySection(),
+            ],
           ),
-        ),
-        const SizedBox(height: 10),
-        _buildStyledTextField(
-          controller: _userIdController,
-          labelText: 'User ID *',
-          readOnly: true, // User ID is pre-filled and should not be changed
-        ),
-        const SizedBox(height: 10),
-        _buildStyledTextField(
-          controller: _userNameController,
-          labelText: 'Name (optional)',
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStyledTextField(
-                controller: _ageController,
-                labelText: 'Age',
-                keyboardType: TextInputType.number,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildStyledTextField(
-                controller: _heightController,
-                labelText: 'Height (cm)',
-                keyboardType: TextInputType.number,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildStyledTextField(
-                controller: _weightController,
-                labelText: 'Weight (kg)',
-                keyboardType: TextInputType.number,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStyledTextField({
-    required TextEditingController controller,
-    required String labelText,
-    TextInputType keyboardType = TextInputType.text,
-    bool readOnly = false,
-  }) {
-    return TextField(
-      controller: controller,
-      style: const TextStyle(color: Colors.white),
-      keyboardType: keyboardType,
-      readOnly: readOnly,
-      decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: const TextStyle(color: Colors.white70),
-        filled: true,
-        fillColor: Colors.grey.shade900,
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.white30),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFD0FD3E), width: 2),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
         ),
       ),
     );
@@ -398,48 +517,55 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
           'Select Exercise Type:',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
+            fontFamily: 'Montserrat',
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 15),
         Wrap(
-          spacing: 8.0, // Reduced spacing
-          runSpacing: 8.0, // Reduced run spacing
+          spacing: 10.0,
+          runSpacing: 10.0,
           children: ExerciseType.values.map((type) {
             final isSelected = _selectedExercise == type;
-            return ChoiceChip(
-              label: Text(
-                type.name.replaceAll('_', ' ').toTitleCase(),
-                style: TextStyle(
-                  color: isSelected ? Colors.black : Colors.white70,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14, // Slightly smaller font for chips
-                ),
-              ),
-              selected: isSelected,
-              selectedColor: const Color(0xFFD0FD3E),
-              backgroundColor: Colors.grey.shade800,
+            return ExerciseChip(
+              key: ValueKey(type),
+              type: type,
+              isSelected: isSelected,
+              icon: _getExerciseIcon(type),
               onSelected: (selected) {
                 setState(() {
                   _selectedExercise = selected ? type : null;
                 });
               },
-              side: BorderSide(
-                color: isSelected
-                    ? const Color(0xFFD0FD3E)
-                    : Colors.grey.shade700,
-                width: 1.5,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20), // More rounded chips
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Adjusted padding
             );
           }).toList(),
         ),
       ],
     );
+  }
+
+  IconData _getExerciseIcon(ExerciseType type) {
+    switch (type) {
+      case ExerciseType.VERTICAL_JUMP:
+        return Icons.keyboard_arrow_up;
+      case ExerciseType.SHUTTLE_RUN:
+        return Icons.directions_run;
+      case ExerciseType.SITUPS:
+        return Icons.accessibility_new;
+      case ExerciseType.PUSHUPS:
+        return Icons.fitness_center;
+      case ExerciseType.PLANK_HOLD:
+        return Icons.hourglass_empty;
+      case ExerciseType.STANDING_BROAD_JUMP:
+        return Icons.directions_walk;
+      case ExerciseType.SQUATS:
+        return Icons.accessibility;
+      case ExerciseType.ENDURANCE_RUN:
+        return Icons.run_circle;
+      default:
+        return Icons.help_outline;
+    }
   }
 
   Widget _buildVideoSelectionButtons() {
@@ -449,33 +575,43 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () => _pickVideo(ImageSource.gallery),
-            icon: const Icon(Icons.video_library_outlined),
-            label: const Text('Pick from Gallery'),
+            icon: const Icon(Icons.video_library_outlined, size: 26),
+            label: const Text('Gallery'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade700,
+              backgroundColor: Colors.blueGrey.shade700,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              textStyle: const TextStyle(fontSize: 16),
+              textStyle: const TextStyle(
+                fontSize: 17,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w600,
+              ),
+              elevation: 5,
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 15),
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () => _pickVideo(ImageSource.camera),
-            icon: const Icon(Icons.videocam_outlined),
-            label: const Text('Capture Video'),
+            icon: const Icon(Icons.videocam_outlined, size: 26),
+            label: const Text('Capture'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade700,
+              backgroundColor: Colors.deepPurple.shade700,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              textStyle: const TextStyle(fontSize: 16),
+              textStyle: const TextStyle(
+                fontSize: 17,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w600,
+              ),
+              elevation: 5,
             ),
           ),
         ),
@@ -490,98 +626,141 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     final feedback = _reportData!['feedback'] ?? [];
 
     return Padding(
-      padding: const EdgeInsets.only(top: 20.0),
+      padding: const EdgeInsets.only(top: 30.0),
       child: Card(
-        color: Colors.grey.shade900,
-        elevation: 5,
+        color: Colors.grey.shade900.withOpacity(0.8),
+        elevation: 10,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-          side: const BorderSide(color: Color(0xFFD0FD3E), width: 1.5),
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFFD0FD3E), width: 2),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(25.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Analysis Report:',
+                'Performance Report',
                 style: TextStyle(
                   color: Color(0xFFD0FD3E),
-                  fontSize: 22,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat',
                 ),
               ),
-              const Divider(color: Colors.white30, height: 25, thickness: 1),
-              _buildReportRow('Test ID', _testId ?? 'N/A'),
-              _buildReportRow('Exercise', _selectedExercise?.name.replaceAll('_', ' ').toTitleCase() ?? 'N/A'),
-              _buildReportRow('User Name', _userNameController.text.isEmpty ? 'N/A' : _userNameController.text),
-              const SizedBox(height: 15),
+              const Divider(color: Colors.white30, height: 30, thickness: 1.5),
+              _buildReportRow(
+                'Exercise',
+                _selectedExercise?.name.replaceAll('_', ' ').toTitleCase() ??
+                    'N/A',
+                icon: _selectedExercise != null ? _getExerciseIcon(_selectedExercise!) : Icons.help_outline,
+              ),
+              _buildReportRow('Test ID', _testId ?? 'N/A', icon: Icons.tag),
+              const SizedBox(height: 20),
               const Text(
-                'Performance Metrics:',
+                'Key Metrics:',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat',
                 ),
               ),
-              _buildReportRow('Overall Score', '${performance['overall_score']?.toStringAsFixed(1) ?? 'N/A'}/100'),
-              _buildReportRow('Grade', performance['grade'] ?? 'N/A'),
-              _buildReportRow('Repetitions', performance['rep_count']?.toString() ?? 'N/A'),
-              _buildReportRow('Form Accuracy', '${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%'),
-              _buildReportRow('Duration', '${performance['duration_seconds']?.toStringAsFixed(1) ?? 'N/A'}s'),
-              const SizedBox(height: 15),
+              _buildMetricTile(
+                'Overall Score',
+                '${performance['overall_score']?.toStringAsFixed(1) ?? 'N/A'}/100',
+                Icons.star_half,
+              ),
+              _buildMetricTile(
+                'Grade',
+                performance['grade'] ?? 'N/A',
+                Icons.grade,
+              ),
+              _buildMetricTile(
+                'Repetitions',
+                performance['rep_count']?.toString() ?? 'N/A',
+                Icons.repeat,
+              ),
+              _buildMetricTile(
+                'Form Accuracy',
+                '${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%',
+                Icons.accessibility_new,
+              ),
+              _buildMetricTile(
+                'Duration',
+                '${performance['duration_seconds']?.toStringAsFixed(1) ?? 'N/A'}s',
+                Icons.timer,
+              ),
+              const SizedBox(height: 25),
               const Text(
-                'Feedback:',
+                'Feedback for Improvement:',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat',
                 ),
               ),
+              const SizedBox(height: 10),
               if (feedback.isEmpty)
                 const Text(
-                  'No specific feedback provided.',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  'Great job! No specific feedback provided, keep up the good work.',
+                  style: TextStyle(color: Colors.white70, fontSize: 16),
                 ),
-              ...feedback.map<Widget>((item) => Padding(
-                padding: const EdgeInsets.only(top: 4.0, left: 8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.check_circle_outline, color: Color(0xFFD0FD3E), size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        item.toString(),
-                        style: const TextStyle(color: Colors.white70, fontSize: 14),
+              ...feedback
+                  .map<Widget>(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(top: 8.0, left: 5.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.lightbulb_outline,
+                            color: Color(0xFFD0FD3E),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              item.toString(),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontFamily: 'Montserrat',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              )).toList(),
-              const SizedBox(height: 20),
+                  )
+                  .toList(),
+              const SizedBox(height: 30),
               Center(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement viewing of the analyzed video
-                    // You would likely get a URL for the analyzed video from your backend
-                    // and initialize _analyzedVideoController with it.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Viewing analyzed video (feature coming soon!)'),
-                        backgroundColor: Colors.blueAccent,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.play_circle_fill),
-                  label: const Text('View Analyzed Video'),
+                  onPressed: (_getFullAnalyzedVideoUrl() != null || (_localVideoController != null && _localVideoController!.value.isInitialized))
+                      ? _viewAnalyzedOrLocalVideo
+                      : null,
+                  icon: const Icon(Icons.play_circle_fill, size: 28),
+                  label: const Text('View Video'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: (_getFullAnalyzedVideoUrl() != null || (_localVideoController != null && _localVideoController!.value.isInitialized))
+                        ? Colors.blueAccent
+                        : Colors.grey,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 15,
                     ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                    elevation: 8,
                   ),
                 ),
               ),
@@ -592,29 +771,151 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
-  Widget _buildReportRow(String label, String value) {
+  Widget _buildReportRow(String label, String value, {IconData? icon}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            '$label:',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+          Row(
+            children: [
+              if (icon != null) Icon(icon, color: Colors.white, size: 20),
+              if (icon != null) const SizedBox(width: 10),
+              Text(
+                '$label:',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+            ],
           ),
           Text(
             value,
             style: const TextStyle(
-              color: Color(0xFFD0FD3E), // Highlight values
-              fontSize: 16,
+              color: Color(0xFFD0FD3E),
+              fontSize: 17,
               fontWeight: FontWeight.w600,
+              fontFamily: 'Montserrat',
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMetricTile(String title, String value, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade800.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.white12, width: 0.5),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFFD0FD3E), size: 24),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                color: Color(0xFFD0FD3E),
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ExerciseChip extends StatefulWidget {
+  final ExerciseType type;
+  final bool isSelected;
+  final ValueChanged<bool> onSelected;
+  final IconData icon;
+
+  const ExerciseChip({
+    super.key,
+    required this.type,
+    required this.isSelected,
+    required this.onSelected,
+    required this.icon,
+  });
+
+  @override
+  State<ExerciseChip> createState() => _ExerciseChipState();
+}
+
+class _ExerciseChipState extends State<ExerciseChip> {
+  bool _isHovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color hoverGreen = const Color(0xFFE0FF7F);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovering = true),
+      onExit: (_) => setState(() => _isHovering = false),
+      child: ChoiceChip(
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              widget.icon,
+              color: widget.isSelected || _isHovering ? Colors.black : Colors.white70,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              widget.type.name.replaceAll('_', ' ').toTitleCase(),
+              style: TextStyle(
+                color: widget.isSelected || _isHovering ? Colors.black : Colors.white70,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                fontFamily: 'Montserrat',
+              ),
+            ),
+          ],
+        ),
+        selected: widget.isSelected,
+        selectedColor: const Color(0xFFD0FD3E),
+        backgroundColor: _isHovering && !widget.isSelected
+            ? Colors.grey.shade700.withOpacity(0.8)
+            : Colors.grey.shade800.withOpacity(0.6),
+        onSelected: widget.onSelected,
+        side: BorderSide(
+          color: widget.isSelected
+              ? const Color(0xFFD0FD3E)
+              : (_isHovering ? hoverGreen : Colors.grey.shade700),
+          width: 1.5,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        elevation: widget.isSelected ? 5 : (_isHovering ? 4 : 2),
+        shadowColor: widget.isSelected
+            ? const Color(0xFFD0FD3E).withOpacity(0.4)
+            : (_isHovering ? hoverGreen.withOpacity(0.3) : Colors.transparent),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
     );
   }
