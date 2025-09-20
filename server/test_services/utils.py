@@ -649,12 +649,12 @@ with targeted improvement focusing on {', '.join([f.split()[0] for f in key_find
                         values = [m[key] for m in valid_metrics if key in m and isinstance(m[key], (int, float))]
                         if values:
                             avg_metrics[key] = sum(values) / len(values)
-        
+    
         feedback_counter = Counter(self.feedback_history)
         common_feedback = [feedback for feedback, count in feedback_counter.most_common(5)
-                           if feedback and not any(positive in feedback.lower() for positive in ["good form", "excellent", "perfect", "great", "nice", "complete"])]
+                        if feedback and not any(positive in feedback.lower() for positive in ["good form", "excellent", "perfect", "great", "nice", "complete"])]
         
-        report_data_for_ai = {
+        report_data_for_analysis = {
             'score': overall_score,
             'form_accuracy': form_accuracy,
             'duration': duration,
@@ -665,7 +665,10 @@ with targeted improvement focusing on {', '.join([f.split()[0] for f in key_find
             'rep_count': self.rep_count,
             'form_errors': self.form_errors
         }
-        ai_analysis = self.get_ai_summary(report_data_for_ai)
+        
+        # Generate SEPARATE summaries
+        rule_based_analysis = self._generate_enhanced_rule_based_summary(report_data_for_analysis)
+        ai_analysis = self.get_ai_summary(report_data_for_analysis)
         
         report_json_data = {
             'user_profile': {
@@ -687,7 +690,9 @@ with targeted improvement focusing on {', '.join([f.split()[0] for f in key_find
                 'grade': ("A" if overall_score >= 85 else "B" if overall_score >= 70 else "C" if overall_score >= 50 else "D"),
                 'rep_count': self.rep_count,
             },
-            'analysis': ai_analysis,
+            # SEPARATE ANALYSES
+            'rule_based_analysis': rule_based_analysis,  # Rule-based summary, findings, recommendations
+            'ai_analysis': ai_analysis,  # AI-generated summary, findings, recommendations
             'metrics': avg_metrics,
             'form_errors': self.form_errors,
             'technical_details': {
@@ -714,7 +719,6 @@ with targeted improvement focusing on {', '.join([f.split()[0] for f in key_find
             print(f"❌ Failed to generate PDF report: {pdf_filename}")
 
         db_record = {
-            "_id": report_object_id,
             "testId": str(report_object_id),
             "userId": self.user_profile.user_id,
             "timestamp": datetime.now(),
@@ -722,9 +726,12 @@ with targeted improvement focusing on {', '.join([f.split()[0] for f in key_find
             "videoPath": analyzed_video_url,
             "reportPath": pdf_web_path,
             "feedback": {
-                "summary": ai_analysis.get('summary', 'N/A'),
-                "key_findings": ai_analysis.get('key_findings', []),
-                "recommendations": ai_analysis.get('recommendations', []),
+                "rule_based_summary": rule_based_analysis.get('summary', 'N/A'),
+                "rule_based_key_findings": rule_based_analysis.get('key_findings', []),
+                "rule_based_recommendations": rule_based_analysis.get('recommendations', []),
+                "ai_summary": ai_analysis.get('summary', 'N/A'),
+                "ai_key_findings": ai_analysis.get('key_findings', []),
+                "ai_recommendations": ai_analysis.get('recommendations', []),
                 "form_errors_breakdown": self.form_errors,
                 "common_feedback": common_feedback,
                 "full_feedback_history": self.all_feedback_per_frame,
@@ -779,6 +786,7 @@ async def export_to_pdf(report_data: dict, filename: str) -> bool:
             story.append(Paragraph("Exercise Form Analysis Report", title_style))
             story.append(Spacer(1, 0.2*inch))
             
+            # USER PROFILE SECTION
             user_profile = report_data.get('user_profile', {})
             story.append(Paragraph("<b>USER PROFILE</b>", h2_style))
             user_info = f"""
@@ -791,6 +799,7 @@ async def export_to_pdf(report_data: dict, filename: str) -> bool:
             story.append(Paragraph(user_info, styles['Normal']))
             story.append(Spacer(1, 0.15*inch))
             
+            # EXERCISE DETAILS SECTION
             exercise_details = report_data.get('exercise_details', {})
             story.append(Paragraph("<b>EXERCISE ANALYSIS</b>", h2_style))
             exercise_info = f"""
@@ -802,6 +811,7 @@ async def export_to_pdf(report_data: dict, filename: str) -> bool:
             story.append(Paragraph(exercise_info, styles['Normal']))
             story.append(Spacer(1, 0.15*inch))
             
+            # PERFORMANCE SCORE SECTION
             performance = report_data.get('performance', {})
             technical = report_data.get('technical_details', {})
             story.append(Paragraph("<b>PERFORMANCE SCORE</b>", h2_style))
@@ -813,36 +823,63 @@ async def export_to_pdf(report_data: dict, filename: str) -> bool:
             <b>Correct Form Frames:</b> {technical.get('correct_frames', 0)}<br/>
             """
             story.append(Paragraph(performance_info, styles['Normal']))
-            story.append(Spacer(1, 0.15*inch))
+            story.append(Spacer(1, 0.2*inch))
             
-            analysis = report_data.get('analysis', {})
-            if analysis:
-                key_findings = analysis.get('key_findings', [])
-                if key_findings:
-                    story.append(Paragraph("<b>KEY FINDINGS</b>", h2_style))
-                    findings_text = "".join([f"• {finding}<br/>" for finding in key_findings])
-                    story.append(Paragraph(findings_text, styles['Normal']))
-                    story.append(Spacer(1, 0.15*inch))
+            # RULE-BASED ANALYSIS SECTION (SEPARATE)
+            rule_based = report_data.get('rule_based_analysis', {})
+            if rule_based:
+                story.append(Paragraph("<b>RULE-BASED ANALYSIS</b>", h2_style))
+                story.append(Paragraph("<b>Summary:</b>", styles['Heading3']))
+                story.append(Paragraph(rule_based.get('summary', 'N/A'), styles['Normal']))
+                story.append(Spacer(1, 0.1*inch))
                 
-                summary = analysis.get('summary', '')
-                if summary:
-                    story.append(Paragraph("<b>ANALYSIS SUMMARY</b>", h2_style))
-                    story.append(Paragraph(summary, styles['Normal']))
-                    story.append(Spacer(1, 0.15*inch))
+                story.append(Paragraph("<b>Key Findings:</b>", styles['Heading3']))
+                for finding in rule_based.get('key_findings', []):
+                    story.append(Paragraph(f"• {finding}", styles['Normal']))
+                story.append(Spacer(1, 0.1*inch))
                 
-                recommendations = analysis.get('recommendations', [])
-                if recommendations:
-                    story.append(Paragraph("<b>RECOMMENDATIONS</b>", h2_style))
-                    rec_text = "".join([f"{i}. {rec}<br/>" for i, rec in enumerate(recommendations, 1)])
-                    story.append(Paragraph(rec_text, styles['Normal']))
-                    story.append(Spacer(1, 0.15*inch))
+                story.append(Paragraph("<b>Recommendations:</b>", styles['Heading3']))
+                for rec in rule_based.get('recommendations', []):
+                    story.append(Paragraph(f"• {rec}", styles['Normal']))
+                story.append(Spacer(1, 0.2*inch))
             
+            # AI ANALYSIS SECTION (SEPARATE)
+            ai_analysis = report_data.get('ai_analysis', {})
+            if ai_analysis:
+                story.append(Paragraph("<b>AI-POWERED ANALYSIS</b>", h2_style))
+                story.append(Paragraph("<b>AI Summary:</b>", styles['Heading3']))
+                story.append(Paragraph(ai_analysis.get('summary', 'N/A'), styles['Normal']))
+                story.append(Spacer(1, 0.1*inch))
+                
+                story.append(Paragraph("<b>AI Key Findings:</b>", styles['Heading3']))
+                for finding in ai_analysis.get('key_findings', []):
+                    story.append(Paragraph(f"• {finding}", styles['Normal']))
+                story.append(Spacer(1, 0.1*inch))
+                
+                story.append(Paragraph("<b>AI Recommendations:</b>", styles['Heading3']))
+                for rec in ai_analysis.get('recommendations', []):
+                    story.append(Paragraph(f"• {rec}", styles['Normal']))
+                story.append(Spacer(1, 0.2*inch))
+            
+            # METRICS SECTION
+            story.append(Paragraph("<b>AVERAGE METRICS</b>", h2_style))
             metrics = report_data.get('metrics', {})
             if metrics:
-                story.append(Paragraph("<b>AVERAGE METRICS</b>", h2_style))
-                metrics_text = "".join([f"<b>{key.replace('_', ' ').title()}:</b> {value:.2f}<br/>" for key, value in metrics.items()])
+                metrics_text = "<br/>".join([f"<b>{k.replace('_', ' ').title()}:</b> {v:.2f}" for k, v in metrics.items()])
                 story.append(Paragraph(metrics_text, styles['Normal']))
-                story.append(Spacer(1, 0.15*inch))
+            else:
+                story.append(Paragraph("No metrics data available", styles['Normal']))
+            
+            story.append(Spacer(1, 0.2*inch))
+            
+            # FORM ERRORS BREAKDOWN
+            story.append(Paragraph("<b>FORM ERRORS BREAKDOWN</b>", h2_style))
+            form_errors = report_data.get('form_errors', {})
+            if form_errors:
+                error_text = "<br/>".join([f"<b>{k.replace('_', ' ').title()}:</b> {v} occurrences" for k, v in form_errors.items()])
+                story.append(Paragraph(error_text, styles['Normal']))
+            else:
+                story.append(Paragraph("No form errors detected", styles['Normal']))
 
             doc.build(story)
             return True
