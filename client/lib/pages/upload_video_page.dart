@@ -5,8 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:video_player/video_player.dart';
 import 'dart:convert';
 import 'package:chewie/chewie.dart';
-import 'package:flutter/foundation.dart' show kIsWeb; // Import kIsWeb for platform checks
-import 'dart:io'; // Only used conditionally for non-web platforms
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io';
+import 'package:url_launcher/url_launcher.dart'; // Import for launching URLs
 
 // Enum for exercise types, matching your Python backend
 enum ExerciseType {
@@ -53,7 +54,7 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
   ChewieController? _analyzedChewieController;
   String? _testId;
   Map<String, dynamic>? _reportData;
-  String? _analyzedVideoPathFromServer; // Stores the path like "analyzed_videos\..."
+  String? _analyzedVideoPathFromServer; // Stores the path like "analyzed_videos/..."
 
   final ImagePicker _picker = ImagePicker();
 
@@ -70,13 +71,17 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
     // Normalize path separators from Windows-style '\' to URL-friendly '/'
     String normalizedPath = _analyzedVideoPathFromServer!.replaceAll('\\', '/');
     // Ensure the base URL does not end with a slash and the path does not start with one, or vice-versa
-    // This logic ensures a correct URL even if apiBaseUrl already has a trailing slash or not.
-    String baseUrl = widget.apiBaseUrl.endsWith('/') ? widget.apiBaseUrl.substring(0, widget.apiBaseUrl.length - 1) : widget.apiBaseUrl;
-    String path = normalizedPath.startsWith('/') ? normalizedPath.substring(1) : normalizedPath;
+    String baseUrl = widget.apiBaseUrl;
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+    }
+    String path = normalizedPath;
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
 
     return '$baseUrl/$path';
   }
-
 
   Future<void> _pickVideo(ImageSource source) async {
     XFile? video;
@@ -202,7 +207,8 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
             _analysisMessage = jsonResponse['message'] ?? "Analysis complete.";
             _testId = jsonResponse['test_id'];
             _reportData = jsonResponse['report_data'];
-            _analyzedVideoPathFromServer = jsonResponse['analyzed_video_url'];
+            // Correctly get the analyzed_video_path
+            _analyzedVideoPathFromServer = jsonResponse['video_path']; // Changed to 'video_path' as per your backend
 
             if (_reportData != null) {
               final performance = _reportData!['performance'];
@@ -278,7 +284,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     _showVideoPlayerDialog(_localChewieController!, 'Uploaded Video');
   }
 
-  Future<void> _viewAnalyzedOrLocalVideo() async {
+  Future<void> _viewAnalyzedVideo() async {
     final String? fullAnalyzedUrl = _getFullAnalyzedVideoUrl();
 
     if (fullAnalyzedUrl != null) {
@@ -307,20 +313,15 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error playing analyzed video from URL "$fullAnalyzedUrl": $e. Ensure backend is serving this path.'),
+            content: Text('Error playing analyzed video from URL "$fullAnalyzedUrl": $e. Ensure backend is serving this path correctly.'),
             backgroundColor: Colors.red,
           ),
         );
-        // Fallback to local video if analyzed video fails
-        _viewLocalVideo();
       }
-    } else if (_localChewieController != null && _localVideoController!.value.isInitialized) {
-      // Fallback to playing the locally uploaded video if analysis is not complete
-      _showVideoPlayerDialog(_localChewieController!, 'Uploaded Video');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No video available to view.'),
+          content: Text('No analyzed video available to view.'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -371,6 +372,78 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
+  Future<void> _downloadReport() async {
+    if (_testId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No test ID available to download report.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final String reportUrl = '${widget.apiBaseUrl}/test/download/report/$_testId';
+    try {
+      if (!await launchUrl(Uri.parse(reportUrl), mode: LaunchMode.externalApplication)) {
+        throw 'Could not launch $reportUrl';
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Downloading report...'),
+          backgroundColor: Color(0xFFD0FD3E),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to download report: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  Future<void> _downloadAnalyzedVideo() async {
+    if (_testId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No test ID available to download analyzed video.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final String videoDownloadUrl = '${widget.apiBaseUrl}/test/download/analyzed-video/$_testId';
+    try {
+      if (!await launchUrl(Uri.parse(videoDownloadUrl), mode: LaunchMode.externalApplication)) {
+        throw 'Could not launch $videoDownloadUrl';
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Downloading analyzed video...'),
+          backgroundColor: Color(0xFFD0FD3E),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to download analyzed video: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _localChewieController?.dispose();
@@ -382,6 +455,16 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
 
   @override
   Widget build(BuildContext context) {
+    // Determine if the "View Analyzed Video" button should be enabled
+    final bool canViewAnalyzedVideo = _getFullAnalyzedVideoUrl() != null;
+
+    // Determine if the "Download Report" button should be enabled
+    final bool canDownloadReport = _testId != null;
+
+    // Determine if the "Download Analyzed Video" button should be enabled
+    final bool canDownloadAnalyzedVideo = _testId != null && _analyzedVideoPathFromServer != null;
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -501,7 +584,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                 ),
 
               if (_reportData != null && !_isLoading)
-                _buildReportDisplaySection(),
+                _buildReportDisplaySection(canViewAnalyzedVideo, canDownloadReport, canDownloadAnalyzedVideo),
             ],
           ),
         ),
@@ -619,7 +702,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
-  Widget _buildReportDisplaySection() {
+  Widget _buildReportDisplaySection(bool canViewAnalyzedVideo, bool canDownloadReport, bool canDownloadAnalyzedVideo) {
     if (_reportData == null) return const SizedBox.shrink();
 
     final performance = _reportData!['performance'] ?? {};
@@ -738,15 +821,61 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
               const SizedBox(height: 30),
               Center(
                 child: ElevatedButton.icon(
-                  onPressed: (_getFullAnalyzedVideoUrl() != null || (_localVideoController != null && _localVideoController!.value.isInitialized))
-                      ? _viewAnalyzedOrLocalVideo
-                      : null,
+                  onPressed: canViewAnalyzedVideo ? _viewAnalyzedVideo : null,
                   icon: const Icon(Icons.play_circle_fill, size: 28),
-                  label: const Text('View Video'),
+                  label: const Text('View Analyzed Video'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: (_getFullAnalyzedVideoUrl() != null || (_localVideoController != null && _localVideoController!.value.isInitialized))
-                        ? Colors.blueAccent
-                        : Colors.grey,
+                    backgroundColor: canViewAnalyzedVideo ? Colors.blueAccent : Colors.grey,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 15,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                    elevation: 8,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: canDownloadReport ? _downloadReport : null,
+                  icon: const Icon(Icons.download, size: 28),
+                  label: const Text('Download Report (PDF)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: canDownloadReport ? Colors.green.shade700 : Colors.grey,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 15,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                    elevation: 8,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: canDownloadAnalyzedVideo ? _downloadAnalyzedVideo : null,
+                  icon: const Icon(Icons.cloud_download, size: 28),
+                  label: const Text('Download Analyzed Video'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: canDownloadAnalyzedVideo ? Colors.orange.shade700 : Colors.grey,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 25,

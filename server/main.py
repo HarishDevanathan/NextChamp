@@ -40,6 +40,12 @@ app.mount(
     name="static"
 )
 
+app.mount("/analyzed_videos", StaticFiles(directory="analyzed_videos"), name="analyzed_videos")
+
+# Mount the directory where reports are stored
+# This means files in the 'reports' folder will be accessible at '/reports/{filename}'
+app.mount("/reports", StaticFiles(directory="reports"), name="reports")
+
 # 5. ROUTERS
 app.include_router(auth_engine)
 app.include_router(router)

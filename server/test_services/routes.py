@@ -11,6 +11,7 @@ import shutil
 from datetime import datetime
 import json
 from bson import ObjectId
+from urllib.parse import unquote
 import asyncio
 
 from .utils import (
@@ -216,7 +217,8 @@ async def analyze_test(
         
         # Update report with final video path
         video_web_path = f"/{final_video_path}"
-        
+        print(video_web_path)
+        print(pdf_path)
         # Schedule cleanup of temp directory
         background_tasks.add_task(cleanup_temp_dir, temp_dir)
         
@@ -240,6 +242,52 @@ async def analyze_test(
             success=False,
             message=f"Analysis failed: {str(e)}"
         )
+
+@router.get("/download/analyzed-video/{test_id}")
+async def download_analyzed_video(test_id: str):
+    """
+    Download the analyzed video for a specific test.
+    
+    - **test_id**: Test identifier
+    """
+    
+    if not results_collection:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    try:
+        result = await results_collection.find_one({"testId": test_id})
+        if not result:
+            try:
+                result = await results_collection.find_one({"_id": ObjectId(test_id)})
+            except:
+                pass
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Test result not found")
+        
+        # Assuming the analyzed video path is stored in the 'raw_report_data' or directly in the document
+        analyzed_video_server_path = result.get("raw_report_data", {}).get("analyzed_video_path")
+        
+        if not analyzed_video_server_path or not os.path.exists(analyzed_video_server_path):
+            # Fallback if stored under a different key or not found
+            # You might need to adjust this based on how you store the video path in the DB
+            analyzed_video_server_path = result.get("videoPath") # Example fallback
+            if not analyzed_video_server_path or not os.path.exists(analyzed_video_server_path):
+                raise HTTPException(status_code=404, detail="Analyzed video file not found")
+        
+        # Extract filename for download
+        filename = os.path.basename(analyzed_video_server_path)
+        print(analyzed_video_server_path)
+        return FileResponse(
+            path=analyzed_video_server_path,
+            filename=f"analyzed_video_{test_id}_{filename}",
+            media_type='video/mp4' # Assuming MP4, adjust if other formats are used
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to download analyzed video: {str(e)}")
 
 @router.get("/results/{user_id}", response_model=List[TestResultResponse])
 async def get_user_test_results(user_id: str, limit: int = 10):
@@ -271,7 +319,7 @@ async def get_user_test_results(user_id: str, limit: int = 10):
                 feedback=doc.get("feedback", {})
             )
             results.append(result)
-        
+        print(results)
         return results
         
     except Exception as e:
@@ -361,39 +409,44 @@ async def generate_workout_plan(user_id: str, test_id: Optional[str] = None):
 async def download_report(test_id: str):
     """
     Download PDF report for a specific test
-    
-    - **test_id**: Test identifier
     """
-    
     if not results_collection:
         raise HTTPException(status_code=500, detail="Database not initialized")
-    
+
     try:
+        test_id = unquote(test_id)  # decode URL-encoded timestamp
+
+        # Try lookup by testId
         result = await results_collection.find_one({"testId": test_id})
+        
+        # Fallback: try as ObjectId if valid
         if not result:
             try:
                 result = await results_collection.find_one({"_id": ObjectId(test_id)})
             except:
                 pass
-        
+
         if not result:
-            raise HTTPException(status_code=404, detail="Test result not found")
-        
+            raise HTTPException(status_code=404, detail=f"Test result not found for id {test_id}")
+
         report_path = result.get("reportPath")
-        if not report_path or not os.path.exists(report_path.lstrip('/')):
-            raise HTTPException(status_code=404, detail="Report file not found")
-        
+        if not report_path:
+            raise HTTPException(status_code=404, detail="Report path missing in DB")
+
+        abs_path = os.path.abspath(report_path)
+        if not os.path.exists(abs_path):
+            raise HTTPException(status_code=404, detail=f"Report file not found: {abs_path}")
+
         return FileResponse(
-            path=report_path.lstrip('/'),
+            path=abs_path,
             filename=f"exercise_report_{test_id}.pdf",
-            media_type='application/pdf'
+            media_type="application/pdf"
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to download report: {str(e)}")
-
 @router.get("/stats/{user_id}")
 async def get_user_stats(user_id: str):
     """
