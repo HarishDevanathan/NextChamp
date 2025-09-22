@@ -54,7 +54,9 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
   ChewieController? _analyzedChewieController;
   String? _testId;
   Map<String, dynamic>? _reportData;
-  String? _analyzedVideoPathFromServer; // Stores the path like "analyzed_videos/..."
+  String?
+  _analyzedVideoPathFromServer; // Stores the path like "/analyzed_videos/..."
+  String? _pdfPathFromServer; // Stores the PDF path from the backend response
 
   final ImagePicker _picker = ImagePicker();
 
@@ -65,22 +67,31 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
 
   // Helper to construct the full analyzed video URL
   String? _getFullAnalyzedVideoUrl() {
-    if (_analyzedVideoPathFromServer == null || _analyzedVideoPathFromServer!.isEmpty) {
+    if (_analyzedVideoPathFromServer == null ||
+        _analyzedVideoPathFromServer!.isEmpty) {
       return null;
     }
-    // Normalize path separators from Windows-style '\' to URL-friendly '/'
-    String normalizedPath = _analyzedVideoPathFromServer!.replaceAll('\\', '/');
-    // Ensure the base URL does not end with a slash and the path does not start with one, or vice-versa
+    // The backend provides the path starting with '/', e.g., '/analyzed_videos/...'
+    // We just need to prepend the base URL.
     String baseUrl = widget.apiBaseUrl;
     if (baseUrl.endsWith('/')) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
-    String path = normalizedPath;
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
+    return '$baseUrl$_analyzedVideoPathFromServer';
+  }
 
-    return '$baseUrl/$path';
+  // Helper to construct the full PDF report URL
+  String? _getFullPdfReportUrl() {
+    if (_pdfPathFromServer == null || _pdfPathFromServer!.isEmpty) {
+      return null;
+    }
+    // The backend provides the path starting with '/', e.g., '/reports/...'
+    // We just need to prepend the base URL.
+    String baseUrl = widget.apiBaseUrl;
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+    }
+    return '$baseUrl$_pdfPathFromServer';
   }
 
   Future<void> _pickVideo(ImageSource source) async {
@@ -99,6 +110,7 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
       _testId = null;
       _reportData = null;
       _analyzedVideoPathFromServer = null;
+      _pdfPathFromServer = null; // Clear previous PDF path
 
       _localChewieController?.dispose();
       _localVideoController?.dispose();
@@ -115,10 +127,14 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
       // --- Platform-specific video controller initialization ---
       if (kIsWeb) {
         // For web, use VideoPlayerController.networkUrl with the XFile's path
-        _localVideoController = VideoPlayerController.networkUrl(Uri.parse(_videoFile!.path));
+        _localVideoController = VideoPlayerController.networkUrl(
+          Uri.parse(_videoFile!.path),
+        );
       } else {
         // For native platforms, use VideoPlayerController.file with dart:io.File
-        _localVideoController = VideoPlayerController.file(File(_videoFile!.path));
+        _localVideoController = VideoPlayerController.file(
+          File(_videoFile!.path),
+        );
       }
       // --- End Platform-specific initialization ---
 
@@ -162,6 +178,7 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
       _isLoading = true;
       _analysisMessage = "Uploading and analyzing video...";
       _analyzedVideoPathFromServer = null;
+      _pdfPathFromServer = null; // Clear previous PDF path
       _testId = null;
       _reportData = null;
 
@@ -176,7 +193,9 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('${widget.apiBaseUrl}/test/analysetest'),
+        Uri.parse(
+          '${widget.apiBaseUrl}/test/analysetest',
+        ), // Corrected endpoint for analysis
       );
 
       request.files.add(
@@ -192,7 +211,8 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
       request.fields['age'] = widget.age.toString();
       request.fields['height'] = widget.height.toString();
       request.fields['weight'] = widget.weight.toString();
-      request.fields['name'] = widget.name;
+      request.fields['user_name'] =
+          widget.name; // Changed from 'name' to 'user_name' as per backend
 
       var response = await request.send();
 
@@ -207,8 +227,11 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
             _analysisMessage = jsonResponse['message'] ?? "Analysis complete.";
             _testId = jsonResponse['test_id'];
             _reportData = jsonResponse['report_data'];
-            // Correctly get the analyzed_video_path
-            _analyzedVideoPathFromServer = jsonResponse['video_path']; // Changed to 'video_path' as per your backend
+            _analyzedVideoPathFromServer =
+                jsonResponse['video_path']; // This is the path like "/analyzed_videos/..."
+
+            _pdfPathFromServer =
+                jsonResponse['pdf_path']; // Get the PDF path directly from the response
 
             if (_reportData != null) {
               final performance = _reportData!['performance'];
@@ -241,7 +264,8 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
         final errorBody = await http.Response.fromStream(response);
         if (!mounted) return;
         setState(() {
-          _analysisMessage = "Error: ${response.statusCode} - ${errorBody.body}";
+          _analysisMessage =
+              "Error: ${response.statusCode} - ${errorBody.body}";
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Upload failed: ${response.statusCode}'),
@@ -272,10 +296,13 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
   }
 
   Future<void> _viewLocalVideo() async {
-    if (_localChewieController == null || !_localVideoController!.value.isInitialized) {
+    if (_localChewieController == null ||
+        !_localVideoController!.value.isInitialized) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No uploaded video available to view or video not initialized.'),
+          content: Text(
+            'No uploaded video available to view or video not initialized.',
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -288,7 +315,6 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     final String? fullAnalyzedUrl = _getFullAnalyzedVideoUrl();
 
     if (fullAnalyzedUrl != null) {
-      // Play analyzed video from constructed URL
       _analyzedChewieController?.dispose();
       _analyzedVideoController?.dispose();
       _analyzedVideoController = null;
@@ -313,7 +339,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error playing analyzed video from URL "$fullAnalyzedUrl": $e. Ensure backend is serving this path correctly.'),
+            content: Text(
+              'Error playing analyzed video from URL "$fullAnalyzedUrl": $e. Ensure backend is serving this path correctly.',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -357,7 +385,8 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
               ),
               if (controller.videoPlayerController.value.isInitialized)
                 AspectRatio(
-                  aspectRatio: controller.videoPlayerController.value.aspectRatio,
+                  aspectRatio:
+                      controller.videoPlayerController.value.aspectRatio,
                   child: Chewie(controller: controller),
                 )
               else
@@ -373,25 +402,29 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
   }
 
   Future<void> _downloadReport() async {
-    if (_testId == null) {
+    final String? fullPdfUrl = _getFullPdfReportUrl();
+
+    if (fullPdfUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No test ID available to download report.'),
+          content: Text('No report available to download.'),
           backgroundColor: Colors.orange,
         ),
       );
       return;
     }
 
-    final String reportUrl = '${widget.apiBaseUrl}/test/download/report/$_testId';
     try {
-      if (!await launchUrl(Uri.parse(reportUrl), mode: LaunchMode.externalApplication)) {
-        throw 'Could not launch $reportUrl';
+      if (!await launchUrl(
+        Uri.parse(fullPdfUrl),
+        mode: LaunchMode.externalApplication,
+      )) {
+        throw 'Could not launch $fullPdfUrl';
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Downloading report...'),
+          content: Text('Launching report download...'),
           backgroundColor: Color(0xFFD0FD3E),
           duration: Duration(seconds: 2),
         ),
@@ -409,25 +442,29 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
   }
 
   Future<void> _downloadAnalyzedVideo() async {
-    if (_testId == null) {
+    final String? fullAnalyzedUrl = _getFullAnalyzedVideoUrl();
+
+    if (fullAnalyzedUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No test ID available to download analyzed video.'),
+          content: Text('No analyzed video available to download.'),
           backgroundColor: Colors.orange,
         ),
       );
       return;
     }
 
-    final String videoDownloadUrl = '${widget.apiBaseUrl}/test/download/analyzed-video/$_testId';
     try {
-      if (!await launchUrl(Uri.parse(videoDownloadUrl), mode: LaunchMode.externalApplication)) {
-        throw 'Could not launch $videoDownloadUrl';
+      if (!await launchUrl(
+        Uri.parse(fullAnalyzedUrl),
+        mode: LaunchMode.externalApplication,
+      )) {
+        throw 'Could not launch $fullAnalyzedUrl';
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Downloading analyzed video...'),
+          content: Text('Launching analyzed video download...'),
           backgroundColor: Color(0xFFD0FD3E),
           duration: Duration(seconds: 2),
         ),
@@ -459,11 +496,12 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     final bool canViewAnalyzedVideo = _getFullAnalyzedVideoUrl() != null;
 
     // Determine if the "Download Report" button should be enabled
-    final bool canDownloadReport = _testId != null;
+    final bool canDownloadReport =
+        _getFullPdfReportUrl() != null; // Use the new PDF URL
 
     // Determine if the "Download Analyzed Video" button should be enabled
-    final bool canDownloadAnalyzedVideo = _testId != null && _analyzedVideoPathFromServer != null;
-
+    final bool canDownloadAnalyzedVideo =
+        _getFullAnalyzedVideoUrl() != null; // Use the new video URL
 
     return Scaffold(
       appBar: AppBar(
@@ -485,11 +523,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1A1A1A),
-              Colors.black,
-              Color(0xFF0A0A0A),
-            ],
+            colors: [Color(0xFF1A1A1A), Colors.black, Color(0xFF0A0A0A)],
           ),
         ),
         child: SingleChildScrollView(
@@ -501,7 +535,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
               const SizedBox(height: 30),
               _buildVideoSelectionButtons(),
               const SizedBox(height: 20),
-              if (_videoFile != null && _localChewieController != null && _localVideoController!.value.isInitialized)
+              if (_videoFile != null &&
+                  _localChewieController != null &&
+                  _localVideoController!.value.isInitialized)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: ElevatedButton.icon(
@@ -524,7 +560,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                     ),
                   ),
                 ),
-              if (_videoFile != null && (_localVideoController == null || !_localVideoController!.value.isInitialized))
+              if (_videoFile != null &&
+                  (_localVideoController == null ||
+                      !_localVideoController!.value.isInitialized))
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: Text(
@@ -569,7 +607,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                 ),
               ),
 
-              if (_analysisMessage != null && !_isLoading && _reportData == null)
+              if (_analysisMessage != null &&
+                  !_isLoading &&
+                  _reportData == null)
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Text(
@@ -584,7 +624,11 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                 ),
 
               if (_reportData != null && !_isLoading)
-                _buildReportDisplaySection(canViewAnalyzedVideo, canDownloadReport, canDownloadAnalyzedVideo),
+                _buildReportDisplaySection(
+                  canViewAnalyzedVideo,
+                  canDownloadReport,
+                  canDownloadAnalyzedVideo,
+                ),
             ],
           ),
         ),
@@ -702,7 +746,11 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
-  Widget _buildReportDisplaySection(bool canViewAnalyzedVideo, bool canDownloadReport, bool canDownloadAnalyzedVideo) {
+  Widget _buildReportDisplaySection(
+    bool canViewAnalyzedVideo,
+    bool canDownloadReport,
+    bool canDownloadAnalyzedVideo,
+  ) {
     if (_reportData == null) return const SizedBox.shrink();
 
     final performance = _reportData!['performance'] ?? {};
@@ -736,7 +784,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                 'Exercise',
                 _selectedExercise?.name.replaceAll('_', ' ').toTitleCase() ??
                     'N/A',
-                icon: _selectedExercise != null ? _getExerciseIcon(_selectedExercise!) : Icons.help_outline,
+                icon: _selectedExercise != null
+                    ? _getExerciseIcon(_selectedExercise!)
+                    : Icons.help_outline,
               ),
               _buildReportRow('Test ID', _testId ?? 'N/A', icon: Icons.tag),
               const SizedBox(height: 20),
@@ -825,7 +875,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                   icon: const Icon(Icons.play_circle_fill, size: 28),
                   label: const Text('View Analyzed Video'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: canViewAnalyzedVideo ? Colors.blueAccent : Colors.grey,
+                    backgroundColor: canViewAnalyzedVideo
+                        ? Colors.blueAccent
+                        : Colors.grey,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 25,
@@ -850,7 +902,9 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                   icon: const Icon(Icons.download, size: 28),
                   label: const Text('Download Report (PDF)'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: canDownloadReport ? Colors.green.shade700 : Colors.grey,
+                    backgroundColor: canDownloadReport
+                        ? Colors.green.shade700
+                        : Colors.grey,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 25,
@@ -871,11 +925,15 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
               const SizedBox(height: 15),
               Center(
                 child: ElevatedButton.icon(
-                  onPressed: canDownloadAnalyzedVideo ? _downloadAnalyzedVideo : null,
+                  onPressed: canDownloadAnalyzedVideo
+                      ? _downloadAnalyzedVideo
+                      : null,
                   icon: const Icon(Icons.cloud_download, size: 28),
                   label: const Text('Download Analyzed Video'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: canDownloadAnalyzedVideo ? Colors.orange.shade700 : Colors.grey,
+                    backgroundColor: canDownloadAnalyzedVideo
+                        ? Colors.orange.shade700
+                        : Colors.grey,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 25,
@@ -1009,14 +1067,18 @@ class _ExerciseChipState extends State<ExerciseChip> {
           children: [
             Icon(
               widget.icon,
-              color: widget.isSelected || _isHovering ? Colors.black : Colors.white70,
+              color: widget.isSelected || _isHovering
+                  ? Colors.black
+                  : Colors.white70,
               size: 20,
             ),
             const SizedBox(width: 8),
             Text(
               widget.type.name.replaceAll('_', ' ').toTitleCase(),
               style: TextStyle(
-                color: widget.isSelected || _isHovering ? Colors.black : Colors.white70,
+                color: widget.isSelected || _isHovering
+                    ? Colors.black
+                    : Colors.white70,
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
                 fontFamily: 'Montserrat',
@@ -1036,9 +1098,7 @@ class _ExerciseChipState extends State<ExerciseChip> {
               : (_isHovering ? hoverGreen : Colors.grey.shade700),
           width: 1.5,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(25),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         elevation: widget.isSelected ? 5 : (_isHovering ? 4 : 2),
         shadowColor: widget.isSelected

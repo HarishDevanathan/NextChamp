@@ -1,57 +1,54 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles   # 1. IMPORT THIS
-from pathlib import Path                      # 2. IMPORT THIS
-from auth_services.routes import auth_engine  # make sure path is correct
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # or specify your frontend URL
-    allow_credentials=True,
-    allow_methods=["*"],  # allows GET, POST, PUT, DELETE, OPTIONS
-    allow_headers=["*"],
-)
-
-from fastapi.middleware.cors import CORSMiddleware   # 1. IMPORT THIS
-from fastapi.staticfiles import StaticFiles          # 2. IMPORT THIS
-from pathlib import Path
+# Import your routers
 from auth_services.routes import auth_engine
 from test_services.routes import router
 from bot_services.routes import bot_engine
 
 app = FastAPI()
 
-
-
+# 1️⃣ CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # Allow all origins (for testing)
+    allow_origins=["*"],  # or restrict to your frontend
     allow_credentials=True,
-    allow_methods=["*"],          # Allow all HTTP methods
-    allow_headers=["*"],          # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
+# 2️⃣ Mount static folders
+BASE_DIR = Path(__file__).resolve().parent
 
+# Static folder for general assets
 app.mount(
     "/static",
-    StaticFiles(directory=Path(__file__).resolve().parent / "static"),
+    StaticFiles(directory=BASE_DIR / "static"),
     name="static"
 )
 
-app.mount("/analyzed_videos", StaticFiles(directory="analyzed_videos"), name="analyzed_videos")
+# Videos folder - serves all files in analyzed_videos
+app.mount(
+    "/analyzed_videos",
+    StaticFiles(directory=BASE_DIR / "analyzed_videos"),
+    name="analyzed_videos"
+)
 
-# Mount the directory where reports are stored
-# This means files in the 'reports' folder will be accessible at '/reports/{filename}'
-app.mount("/reports", StaticFiles(directory="reports"), name="reports")
+# Reports folder
+app.mount(
+    "/reports",
+    StaticFiles(directory=BASE_DIR / "reports"),
+    name="reports"
+)
 
-# 5. ROUTERS
+# 3️⃣ Include your routers
 app.include_router(auth_engine)
 app.include_router(router)
 app.include_router(bot_engine)
 
-# 6. ROOT
+# 4️⃣ Root endpoint
 @app.get("/")
 def root():
     return {"message": "NextChamp API running"}

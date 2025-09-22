@@ -13,6 +13,7 @@ import json
 from bson import ObjectId
 from urllib.parse import unquote
 import asyncio
+import re
 
 from .utils import (
     ExerciseAnalyzer, 
@@ -44,6 +45,7 @@ class AnalyzeTestResponse(BaseModel):
     overall_score: Optional[float] = None
     rep_count: Optional[int] = None
     form_accuracy: Optional[float] = None
+    video_path: Optional[str] = None
 
 class TestResultResponse(BaseModel):
     test_id: str
@@ -144,6 +146,7 @@ async def process_video_analysis(
         out.release()
     
     return output_path
+
 @router.post("/analysetest", response_model=AnalyzeTestResponse)
 async def analyze_test(
     background_tasks: BackgroundTasks,
@@ -218,6 +221,7 @@ async def analyze_test(
         # Create final paths with test_id for uniqueness
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         final_video_filename = f"analyzed_{timestamp}_{test_id}_{video.filename}"
+        final_video_filename = re.sub(r"\s+", "_", final_video_filename)
         final_video_path = os.path.join(permanent_video_dir, final_video_filename)
         
         # Move analyzed video to permanent location
