@@ -144,7 +144,6 @@ async def process_video_analysis(
         out.release()
     
     return output_path
-
 @router.post("/analysetest", response_model=AnalyzeTestResponse)
 async def analyze_test(
     background_tasks: BackgroundTasks,
@@ -200,6 +199,9 @@ async def analyze_test(
     # Create temporary directory for processing
     temp_dir = tempfile.mkdtemp()
     
+    # Generate unique test ID
+    test_id = str(ObjectId())
+    
     try:
         # Process video
         print(f"🎬 Starting analysis for {exercise_type} exercise...")
@@ -209,23 +211,36 @@ async def analyze_test(
         print("📊 Generating comprehensive report...")
         report_data, pdf_path = await analyzer.generate_comprehensive_report(analyzed_video_path)
         
-        # Move analyzed video to permanent location
+        # Create permanent directories
         permanent_video_dir = "analyzed_videos"
         os.makedirs(permanent_video_dir, exist_ok=True)
-        final_video_path = os.path.join(permanent_video_dir, f"analyzed_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{video.filename}")
+        
+        # Create final paths with test_id for uniqueness
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        final_video_filename = f"analyzed_{timestamp}_{test_id}_{video.filename}"
+        final_video_path = os.path.join(permanent_video_dir, final_video_filename)
+        
+        # Move analyzed video to permanent location
         shutil.move(analyzed_video_path, final_video_path)
         
-        # Update report with final video path
-        video_web_path = f"/{final_video_path}"
-        print(video_web_path)
-        print(pdf_path)
+        # Convert to forward slashes for web path (works on both Windows and Unix)
+        video_web_path = f"/{final_video_path.replace(os.sep, '/')}"
+        
+        # Update report_data with correct paths
+        if 'analyzed_video_path' in report_data:
+            report_data['analyzed_video_path'] = final_video_path
+        
+        print(f"Final video path: {final_video_path}")
+        print(f"Web path: {video_web_path}")
+        print(f"PDF path: {pdf_path}")
+        
         # Schedule cleanup of temp directory
         background_tasks.add_task(cleanup_temp_dir, temp_dir)
         
         return AnalyzeTestResponse(
             success=True,
             message="Exercise analysis completed successfully",
-            test_id=str(report_data.get('exercise_details', {}).get('date', str(ObjectId()))),
+            test_id=test_id,
             report_data=report_data,
             pdf_path=pdf_path,
             overall_score=report_data['performance']['overall_score'],
@@ -243,51 +258,97 @@ async def analyze_test(
             message=f"Analysis failed: {str(e)}"
         )
 
-@router.get("/download/analyzed-video/{test_id}")
-async def download_analyzed_video(test_id: str):
+@router.get("/download/analyzed-video/{videoPath}")
+async def download_analyzed_video(videoPath: str):
     """
     Download the analyzed video for a specific test.
     
     - **test_id**: Test identifier
     """
-    
-    if not results_collection:
-        raise HTTPException(status_code=500, detail="Database not initialized")
-    
     try:
-        result = await results_collection.find_one({"testId": test_id})
-        if not result:
-            try:
-                result = await results_collection.find_one({"_id": ObjectId(test_id)})
-            except:
-                pass
+        # Try to find by testId first, then by _id
+        result = await results_collection.find_one({"videoPath": videoPath})
         
-        if not result:
-            raise HTTPException(status_code=404, detail="Test result not found")
+        # Try multiple possible locations for the video path
+        analyzed_video_server_path = None
         
-        # Assuming the analyzed video path is stored in the 'raw_report_data' or directly in the document
-        analyzed_video_server_path = result.get("raw_report_data", {}).get("analyzed_video_path")
         
-        if not analyzed_video_server_path or not os.path.exists(analyzed_video_server_path):
-            # Fallback if stored under a different key or not found
-            # You might need to adjust this based on how you store the video path in the DB
-            analyzed_video_server_path = result.get("videoPath") # Example fallback
-            if not analyzed_video_server_path or not os.path.exists(analyzed_video_server_path):
-                raise HTTPException(status_code=404, detail="Analyzed video file not found")
+        # Fallback to videoPath field
+        if result.get("videoPath"):
+            video_path = result["videoPath"]
+            # Handle both absolute and relative paths
+            if os.path.isabs(video_path):
+                analyzed_video_server_path = video_path
+            else:
+                # Remove leading slash if present and join with current directory
+                clean_path = video_path.lstrip('/')
+                analyzed_video_server_path = os.path.join(os.getcwd(), clean_path)
+        
+        if not analyzed_video_server_path:
+            raise HTTPException(status_code=404, detail="Video path not found in database")
+        
+        # Convert path separators to match current OS
+        analyzed_video_server_path = os.path.normpath(analyzed_video_server_path)
+        
+        print(f"Looking for video at: {analyzed_video_server_path}")
+        
+        # Check if file exists
+        if not os.path.exists(analyzed_video_server_path):
+            # Try to construct alternative paths
+            alternative_paths = []
+            
+            # Try in analyzed_videos directory
+            filename = os.path.basename(analyzed_video_server_path)
+            alternative_paths.append(os.path.join("analyzed_videos", filename))
+            
+            # Try with test_id in filename
+            base_name, ext = os.path.splitext(filename)
+            alternative_paths.append(os.path.join("analyzed_videos", f"analyzed_{test_id}_{filename}"))
+            
+            # Check alternative paths
+            for alt_path in alternative_paths:
+                if os.path.exists(alt_path):
+                    analyzed_video_server_path = alt_path
+                    break
+            else:
+                # If still not found, list available files for debugging
+                analyzed_dir = "analyzed_videos"
+                if os.path.exists(analyzed_dir):
+                    available_files = os.listdir(analyzed_dir)
+                    print(f"Available files in {analyzed_dir}: {available_files}")
+                
+                raise HTTPException(
+                    status_code=404, 
+                    detail=f"Analyzed video file not found. Searched: {analyzed_video_server_path}"
+                )
         
         # Extract filename for download
         filename = os.path.basename(analyzed_video_server_path)
-        print(analyzed_video_server_path)
+        
+        # Determine media type based on file extension
+        file_ext = os.path.splitext(filename)[1].lower()
+        media_type_map = {
+            '.mp4': 'video/mp4',
+            '.avi': 'video/avi', 
+            '.mov': 'video/quicktime',
+            '.mkv': 'video/x-matroska'
+        }
+        media_type = media_type_map.get(file_ext, 'video/mp4')
+        
+        print(f"Serving video: {analyzed_video_server_path}")
+        
         return FileResponse(
             path=analyzed_video_server_path,
-            filename=f"analyzed_video_{test_id}_{filename}",
-            media_type='video/mp4' # Assuming MP4, adjust if other formats are used
+            filename=f"analyzed_video_{videoPath}_{filename}",
+            media_type=media_type
         )
         
     except HTTPException:
         raise
     except Exception as e:
+        print(f"Error in download_analyzed_video: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to download analyzed video: {str(e)}")
+
 
 @router.get("/results/{user_id}", response_model=List[TestResultResponse])
 async def get_user_test_results(user_id: str, limit: int = 10):
@@ -415,8 +476,9 @@ async def download_report(test_id: str):
 
     try:
         test_id = unquote(test_id)  # decode URL-encoded timestamp
+        print(f"Looking for report with test_id: {test_id}")
 
-        # Try lookup by testId
+        # Try lookup by testId first
         result = await results_collection.find_one({"testId": test_id})
         
         # Fallback: try as ObjectId if valid
@@ -429,13 +491,90 @@ async def download_report(test_id: str):
         if not result:
             raise HTTPException(status_code=404, detail=f"Test result not found for id {test_id}")
 
-        report_path = result.get("reportPath")
-        if not report_path:
-            raise HTTPException(status_code=404, detail="Report path missing in DB")
+        # Try multiple possible locations for the report path
+        report_path = None
+        
+        # Check reportPath field
+        if result.get("reportPath"):
+            stored_path = result["reportPath"]
+            print(f"Found reportPath in DB: {stored_path}")
+            
+            # Handle relative paths
+            if stored_path.startswith("/"):
+                # Remove leading slash and join with current directory
+                clean_path = stored_path.lstrip('/')
+                report_path = os.path.join(os.getcwd(), clean_path)
+            elif not os.path.isabs(stored_path):
+                # Relative path, join with current directory
+                report_path = os.path.join(os.getcwd(), stored_path)
+            else:
+                # Already absolute path
+                report_path = stored_path
 
+        # Check in raw_report_data as fallback
+        elif result.get("raw_report_data", {}).get("pdf_path"):
+            report_path = result["raw_report_data"]["pdf_path"]
+            print(f"Found pdf_path in raw_report_data: {report_path}")
+
+        if not report_path:
+            raise HTTPException(status_code=404, detail="Report path not found in database")
+
+        # Normalize path separators for current OS
+        report_path = os.path.normpath(report_path)
+        print(f"Normalized report path: {report_path}")
+
+        # Check if file exists
+        if not os.path.exists(report_path):
+            # Try alternative locations
+            alternative_paths = []
+            filename = os.path.basename(report_path)
+            
+            # Try in reports directory
+            alternative_paths.append(os.path.join("reports", filename))
+            
+            # Try with different naming patterns
+            alternative_paths.append(os.path.join("reports", f"exercise_report_{test_id}.pdf"))
+            alternative_paths.append(os.path.join("reports", f"report_{test_id}.pdf"))
+            
+            # Try in current directory
+            alternative_paths.append(filename)
+            alternative_paths.append(f"exercise_report_{test_id}.pdf")
+            
+            # Check alternative paths
+            found_alternative = False
+            for alt_path in alternative_paths:
+                abs_alt_path = os.path.abspath(alt_path)
+                print(f"Checking alternative path: {abs_alt_path}")
+                if os.path.exists(abs_alt_path):
+                    report_path = abs_alt_path
+                    found_alternative = True
+                    print(f"Found report at alternative path: {abs_alt_path}")
+                    break
+            
+            if not found_alternative:
+                # List available files for debugging
+                reports_dir = "reports"
+                available_files = []
+                if os.path.exists(reports_dir):
+                    available_files = os.listdir(reports_dir)
+                    print(f"Available files in {reports_dir}: {available_files}")
+                
+                # Also check current directory for PDF files
+                current_dir_pdfs = [f for f in os.listdir('.') if f.endswith('.pdf')]
+                print(f"PDF files in current directory: {current_dir_pdfs}")
+                
+                raise HTTPException(
+                    status_code=404, 
+                    detail=f"Report file not found. Searched: {report_path}. Available in reports/: {available_files}"
+                )
+
+        # Get absolute path for serving
         abs_path = os.path.abspath(report_path)
-        if not os.path.exists(abs_path):
-            raise HTTPException(status_code=404, detail=f"Report file not found: {abs_path}")
+        print(f"Serving report from: {abs_path}")
+
+        # Verify file is actually a PDF
+        if not abs_path.lower().endswith('.pdf'):
+            raise HTTPException(status_code=400, detail="File is not a PDF")
 
         return FileResponse(
             path=abs_path,
@@ -446,6 +585,9 @@ async def download_report(test_id: str):
     except HTTPException:
         raise
     except Exception as e:
+        print(f"Error in download_report: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Failed to download report: {str(e)}")
 @router.get("/stats/{user_id}")
 async def get_user_stats(user_id: str):

@@ -1,0 +1,72 @@
+{
+  "user_profile": {
+    "name": "",
+    "age": 19,
+    "height": 178,
+    "weight": 70,
+    "bmi": 22.093170054286073,
+    "fitness_level": "Normal weight"
+  },
+  "exercise_details": {
+    "type": "VERTICAL_JUMP",
+    "duration": 13.303539514541626,
+    "date": "2025-09-21T19:15:43.940384"
+  },
+  "performance": {
+    "overall_score": 84.60875120090046,
+    "form_accuracy": 65.59766763848397,
+    "grade": "B",
+    "rep_count": 0
+  },
+  "rule_based_analysis": {
+    "summary": "The user shows excellent form with only minor refinements suggested during the Vertical Jump exercise session.\nPerformance assessment: Excellent (84.6/100 points).\nForm accuracy of 65.6% was maintained across 343 analyzed frames\nover 13.3 seconds. Analysis reveals General form maintenance achieved., Minor technique refinements possible., Consistent effort demonstrated..\nTechnical proficiency shows strong potential\nwith targeted improvement focusing on General, Minor.",
+    "key_findings": [
+      "General form maintenance achieved.",
+      "Minor technique refinements possible.",
+      "Consistent effort demonstrated."
+    ],
+    "recommendations": [
+      "Focus on form consistency over speed.",
+      "Video review for self-correction.",
+      "Build foundation with perfect form before adding intensity."
+    ]
+  },
+  "ai_analysis": {
+    "summary": "The user shows excellent form with only minor refinements suggested during the Vertical Jump exercise session.\nPerformance assessment: Excellent (84.6/100 points).\nForm accuracy of 65.6% was maintained across 343 analyzed frames\nover 13.3 seconds. Analysis reveals General form maintenance achieved., Minor technique refinements possible., Consistent effort demonstrated..\nTechnical proficiency shows strong potential\nwith targeted improvement focusing on General, Minor.",
+    "key_findings": [
+      "General form maintenance achieved.",
+      "Minor technique refinements possible.",
+      "Consistent effort demonstrated."
+    ],
+    "recommendations": [
+      "Focus on form consistency over speed.",
+      "Video review for self-correction.",
+      "Build foundation with perfect form before adding intensity."
+    ]
+  },
+  "metrics": {
+    "left_knee_angle": 144.58219345686652,
+    "right_knee_angle": 142.75888579412361,
+    "avg_knee_angle": 143.6705396254951,
+    "left_alignment": 0.8505912627003256,
+    "right_alignment": 0.8333177014087838,
+    "avg_alignment": 0.841954482054555,
+    "jump_height_relative": 6.374976618150475,
+    "knee_asymmetry": 5.940531921959525
+  },
+  "form_errors": {
+    "knee_alignment": 113,
+    "depth_issues": 0,
+    "torso_lean": 0,
+    "elbow_position": 0,
+    "body_alignment": 0,
+    "landing_form": 0,
+    "takeoff_form": 4,
+    "jump_asymmetry": 0
+  },
+  "technical_details": {
+    "total_frames": 343,
+    "correct_frames": 225
+  },
+  "full_feedback_history": []
+}
