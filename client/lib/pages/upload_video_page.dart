@@ -7,7 +7,11 @@ import 'dart:convert';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
-import 'package:url_launcher/url_launcher.dart'; // Import for launching URLs
+import 'package:url_launcher/url_launcher.dart'; // Still useful if you want to fall back or open generic URLs
+import 'package:path_provider/path_provider.dart'; // For getting download path on mobile
+import 'package:permission_handler/permission_handler.dart'; // For requesting storage permissions on mobile
+import 'package:dio/dio.dart'; // For robust file downloading
+import 'package:universal_html/html.dart' as html; // For web-specific download logic
 
 // Enum for exercise types, matching your Python backend
 enum ExerciseType {
@@ -54,11 +58,11 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
   ChewieController? _analyzedChewieController;
   String? _testId;
   Map<String, dynamic>? _reportData;
-  String?
-  _analyzedVideoPathFromServer; // Stores the path like "/analyzed_videos/..."
+  String? _analyzedVideoPathFromServer; // Stores the path like "/analyzed_videos/..."
   String? _pdfPathFromServer; // Stores the PDF path from the backend response
 
   final ImagePicker _picker = ImagePicker();
+  final Dio _dio = Dio(); // Initialize Dio for downloads
 
   @override
   void initState() {
@@ -67,8 +71,7 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
 
   // Helper to construct the full analyzed video URL
   String? _getFullAnalyzedVideoUrl() {
-    if (_analyzedVideoPathFromServer == null ||
-        _analyzedVideoPathFromServer!.isEmpty) {
+    if (_analyzedVideoPathFromServer == null || _analyzedVideoPathFromServer!.isEmpty) {
       return null;
     }
     // The backend provides the path starting with '/', e.g., '/analyzed_videos/...'
@@ -162,6 +165,36 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
         });
       }
     }
+  }
+
+  // New method to remove the selected video
+  void _removeVideo() {
+    setState(() {
+      _videoFile = null;
+      _analysisMessage = null;
+      _testId = null;
+      _reportData = null;
+      _analyzedVideoPathFromServer = null;
+      _pdfPathFromServer = null;
+
+      _localChewieController?.dispose();
+      _localVideoController?.dispose();
+      _localVideoController = null;
+      _localChewieController = null;
+
+      _analyzedChewieController?.dispose();
+      _analyzedVideoController?.dispose();
+      _analyzedVideoController = null;
+      _analyzedChewieController = null;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Video removed successfully'),
+        backgroundColor: Colors.orange,
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   Future<void> _uploadVideo() async {
@@ -401,85 +434,135 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
-  Future<void> _downloadReport() async {
+  // --- New Download Functions ---
+
+  /// Handles file download for both web and mobile platforms.
+  /// Displays snackbars for feedback.
+  Future<void> _downloadFile(BuildContext context, String? url, String filename) async {
+    if (url == null || url.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No file URL available for $filename.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Starting download of $filename...'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+    );
+
+    try {
+      if (kIsWeb) {
+        // Web download using Blob to force download
+        final response = await Dio().get<List<int>>(
+          url,
+          options: Options(responseType: ResponseType.bytes),
+        );
+
+        final blob = html.Blob([Uint8List.fromList(response.data!)]);
+        final blobUrl = html.Url.createObjectUrlFromBlob(blob);
+
+        final anchor = html.AnchorElement(href: blobUrl)
+          ..setAttribute("download", filename)
+          ..click();
+
+        html.Url.revokeObjectUrl(blobUrl);
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$filename download initiated in your browser.'),
+            backgroundColor: const Color(0xFFD0FD3E),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      } else {
+        // Mobile (Android/iOS)
+        PermissionStatus status = await Permission.storage.request();
+        if (!status.isGranted) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Storage permission denied. Cannot download file.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        Directory? appDocDir;
+        if (Platform.isAndroid) {
+          appDocDir = await getExternalStorageDirectory();
+        } else if (Platform.isIOS) {
+          appDocDir = await getApplicationDocumentsDirectory();
+        }
+
+        if (appDocDir == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not find a suitable download directory.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        final savePath = '${appDocDir.path}/$filename';
+        await _dio.download(
+          url,
+          savePath,
+          onReceiveProgress: (received, total) {
+            if (total != -1) {
+              // Optional: show progress
+              // print('Downloading: ${(received / total * 100).toStringAsFixed(0)}%');
+            }
+          },
+        );
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$filename downloaded to: ${appDocDir.path}'),
+            backgroundColor: const Color(0xFFD0FD3E),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to download $filename: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
+  }
+
+  Future<void> _downloadReport(BuildContext context) async {
     final String? fullPdfUrl = _getFullPdfReportUrl();
-
-    if (fullPdfUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No report available to download.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    try {
-      if (!await launchUrl(
-        Uri.parse(fullPdfUrl),
-        mode: LaunchMode.externalApplication,
-      )) {
-        throw 'Could not launch $fullPdfUrl';
-      }
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Launching report download...'),
-          backgroundColor: Color(0xFFD0FD3E),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to download report: $e'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
+    // Use _testId or timestamp for unique filename
+    String filename = 'fitness_report_${_testId ?? DateTime.now().millisecondsSinceEpoch}.pdf';
+    await _downloadFile(context, fullPdfUrl, filename);
   }
 
-  Future<void> _downloadAnalyzedVideo() async {
+  Future<void> _downloadAnalyzedVideo(BuildContext context) async {
     final String? fullAnalyzedUrl = _getFullAnalyzedVideoUrl();
-
-    if (fullAnalyzedUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No analyzed video available to download.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    try {
-      if (!await launchUrl(
-        Uri.parse(fullAnalyzedUrl),
-        mode: LaunchMode.externalApplication,
-      )) {
-        throw 'Could not launch $fullAnalyzedUrl';
-      }
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Launching analyzed video download...'),
-          backgroundColor: Color(0xFFD0FD3E),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to download analyzed video: $e'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
+    String filename = 'analyzed_video_${_testId ?? DateTime.now().millisecondsSinceEpoch}.mp4';
+    await _downloadFile(context, fullAnalyzedUrl, filename);
   }
+
+
+  // --- End New Download Functions ---
 
   @override
   void dispose() {
@@ -535,46 +618,8 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
               const SizedBox(height: 30),
               _buildVideoSelectionButtons(),
               const SizedBox(height: 20),
-              if (_videoFile != null &&
-                  _localChewieController != null &&
-                  _localVideoController!.value.isInitialized)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: ElevatedButton.icon(
-                    onPressed: _viewLocalVideo,
-                    icon: const Icon(Icons.play_arrow_outlined, size: 26),
-                    label: const Text('View Uploaded Video'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal.shade700,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      textStyle: const TextStyle(
-                        fontSize: 17,
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.w600,
-                      ),
-                      elevation: 5,
-                    ),
-                  ),
-                ),
-              if (_videoFile != null &&
-                  (_localVideoController == null ||
-                      !_localVideoController!.value.isInitialized))
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  child: Text(
-                    'Selected Video: ${_videoFile!.name} (Initializing...)',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 16,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+              if (_videoFile != null)
+                _buildVideoActionsSection(),
               const SizedBox(height: 30),
               ElevatedButton.icon(
                 onPressed: _isLoading ? null : _uploadVideo,
@@ -628,6 +673,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
                   canViewAnalyzedVideo,
                   canDownloadReport,
                   canDownloadAnalyzedVideo,
+                  context
                 ),
             ],
           ),
@@ -746,10 +792,109 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
+  Widget _buildVideoActionsSection() {
+    return Column(
+      children: [
+        if (_localChewieController != null &&
+            _localVideoController!.value.isInitialized)
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _viewLocalVideo,
+                  icon: const Icon(Icons.play_arrow_outlined, size: 26),
+                  label: const Text('View Video'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.w600,
+                    ),
+                    elevation: 5,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _removeVideo,
+                  icon: const Icon(Icons.delete_outline, size: 26),
+                  label: const Text('Remove'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.w600,
+                    ),
+                    elevation: 5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        if (_videoFile != null &&
+            (_localVideoController == null ||
+                !_localVideoController!.value.isInitialized))
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Column(
+              children: [
+                Text(
+                  'Selected Video: ${_videoFile!.name} (Initializing...)',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 15),
+                ElevatedButton.icon(
+                  onPressed: _removeVideo,
+                  icon: const Icon(Icons.delete_outline, size: 26),
+                  label: const Text('Remove Video'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade700,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 15,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.w600,
+                    ),
+                    elevation: 5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildReportDisplaySection(
     bool canViewAnalyzedVideo,
     bool canDownloadReport,
     bool canDownloadAnalyzedVideo,
+    BuildContext context
   ) {
     if (_reportData == null) return const SizedBox.shrink();
 
@@ -898,7 +1043,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
               const SizedBox(height: 15),
               Center(
                 child: ElevatedButton.icon(
-                  onPressed: canDownloadReport ? _downloadReport : null,
+                  onPressed: canDownloadReport ? () => _downloadReport(context) : null,
                   icon: const Icon(Icons.download, size: 28),
                   label: const Text('Download Report (PDF)'),
                   style: ElevatedButton.styleFrom(
@@ -926,7 +1071,7 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
               Center(
                 child: ElevatedButton.icon(
                   onPressed: canDownloadAnalyzedVideo
-                      ? _downloadAnalyzedVideo
+                      ? () => _downloadAnalyzedVideo(context)
                       : null,
                   icon: const Icon(Icons.cloud_download, size: 28),
                   label: const Text('Download Analyzed Video'),
@@ -958,34 +1103,31 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
-  Widget _buildReportRow(String label, String value, {IconData? icon}) {
+  Widget _buildReportRow(String label, String value, {required IconData icon}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              if (icon != null) Icon(icon, color: Colors.white, size: 20),
-              if (icon != null) const SizedBox(width: 10),
-              Text(
-                '$label:',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Montserrat',
-                ),
-              ),
-            ],
-          ),
+          Icon(icon, color: const Color(0xFFD0FD3E), size: 22),
+          const SizedBox(width: 12),
           Text(
-            value,
+            '$label: ',
             style: const TextStyle(
-              color: Color(0xFFD0FD3E),
-              fontSize: 17,
+              color: Colors.white,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               fontFamily: 'Montserrat',
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+                fontFamily: 'Montserrat',
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -993,41 +1135,43 @@ Form Accuracy: ${performance['form_accuracy']?.toStringAsFixed(1) ?? 'N/A'}%''';
     );
   }
 
-  Widget _buildMetricTile(String title, String value, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.shade800.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white12, width: 0.5),
+  Widget _buildMetricTile(String label, String value, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFFD0FD3E).withOpacity(0.3),
+          width: 1,
         ),
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Icon(icon, color: const Color(0xFFD0FD3E), size: 24),
-            const SizedBox(width: 15),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: 'Montserrat',
-                ),
-              ),
-            ),
-            Text(
-              value,
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFFD0FD3E), size: 24),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Text(
+              label,
               style: const TextStyle(
-                color: Color(0xFFD0FD3E),
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
                 fontFamily: 'Montserrat',
               ),
             ),
-          ],
-        ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Color(0xFFD0FD3E),
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Montserrat',
+            ),
+          ),
+        ],
       ),
     );
   }

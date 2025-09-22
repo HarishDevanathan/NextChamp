@@ -7,3 +7,4 @@ server/test_services/__pycache__
 server/venv
 server/venv311
 server/analyzed_videos
+server/reports
