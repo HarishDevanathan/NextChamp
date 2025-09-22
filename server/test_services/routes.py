@@ -116,7 +116,7 @@ async def process_video_analysis(
     
     # Setup output video writer
     output_path = os.path.join(temp_dir, f"analyzed_{video_file.filename}")
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    fourcc = cv2.VideoWriter_fourcc(*'H264')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
     
     frame_count = 0
