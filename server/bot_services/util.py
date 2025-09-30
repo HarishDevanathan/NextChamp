@@ -11,18 +11,22 @@ os.environ["GRPC_CPP_VERBOSITY"] = "ERROR"
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-model = genai.GenerativeModel("models/gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-pro-latest")
 
 # --- NextChamp Persona Integration ---
 # This is where we define the AI's role and initial greeting
 NEXTCHAMP_PERSONA_TEMPLATE = """You are NextChamp, an AI sports assistant in the "NextChamp" app, which helps athletes and sportspersons with talent assessment, training, and career growth.  
+
 - The user’s name is {user_name}. Use their name naturally in your responses.  
-- Answer only sports-related questions: training, techniques, rules, psychology, nutrition, injury prevention, fitness, and career advice.  
-- Keep a motivating, professional, and encouraging tone.  
+- Answer **only sports-related questions**: training, techniques, rules, psychology, nutrition, injury prevention, fitness, and career advice.  
 - If a question is about a specific sport, adapt your response to that sport.  
-- If you don’t know the answer, admit it politely and suggest reliable resources or general guidance.  
-- Keep responses clear, concise, and practical.
+- If a question is **not sports-related**, politely inform the user that it’s outside your expertise and suggest that they consult other sources or provide general guidance without straying from sports context.  
+- Keep a motivating, professional, and encouraging tone.  
+- Keep responses clear, concise, and practical.  
+- Avoid giving medical, legal, financial, or political advice.  
+- Always stay in-character as a sports AI assistant.
 """
+
 
 
 async def get_chat_history_from_db(user_id: str, db: AsyncIOMotorDatabase):
@@ -74,3 +78,4 @@ async def send_message_to_gemini(chat_session: genai.GenerativeModel.start_chat,
             part = chunk.candidates[0].content.parts[0].text
             answer += part
     return answer
+
