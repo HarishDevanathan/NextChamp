@@ -70,12 +70,23 @@ async def initialize_and_get_chat_session(user_id: str, user_name: str, db: Asyn
     print(f"Chat session initialized for {user_name} ({user_id}). History loaded: {len(db_chat_history)} entries.")
     return chat_session
 
-async def send_message_to_gemini(chat_session: genai.GenerativeModel.start_chat, question: str):
-    response = chat_session.send_message(question, stream=True)
+async def send_message_to_gemini(chat_session, question: str):
+    """
+    Sends a question to Gemini and streams the response.
+    Ensures the assistant answers only sports-related queries.
+    """
+    # Prepend a constraint reminder
+    constrained_question = (
+        "Remember, you are a sports AI assistant. "
+        "Answer only sports-related questions. "
+        "If the question is out of scope, politely inform the user and provide general sports guidance. "
+        f"User asks: {question}"
+    )
+
     answer = ""
+    response = chat_session.send_message(constrained_question, stream=True)
     for chunk in response:
         if chunk.candidates and chunk.candidates[0].content.parts:
             part = chunk.candidates[0].content.parts[0].text
             answer += part
     return answer
-
