@@ -96,3 +96,20 @@ This project is licensed under the **MIT License**.
 **NextChamp** is built with the mission to **empower athletes with AI-driven insights** and bridge the gap between **raw talent and professional recognition**.
 
 --- 
+
+:
+
+🖼️ Screenshots
+<p align="center"> 
+<img src="client/assets/1.png" width="200" /> 
+<img src="client/assets/2.png" width="200" /> 
+<img src="client/assets/3.png" width="200" /> 
+<img src="client/assets/4.png" width="200" /> 
+<img src="client/assets/5.png" width="200" /> 
+<img src="client/assets/6.png" width="200" /> 
+<img src="client/assets/7.png" width="200" /> 
+<img src="client/assets/8.png" width="200" /> 
+<img src="client/assets/9.png" width="200" /> 
+<img src="client/assets/10.png" width="200" /> 
+<img src="client/assets/11.png" width="200" /> 
+</p>
