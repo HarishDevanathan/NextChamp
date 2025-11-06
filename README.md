@@ -99,7 +99,7 @@ This project is licensed under the **MIT License**.
 
 :
 
-🖼️ Screenshots
+## 🖼️ Screenshots
 <p align="center"> 
 <img src="client/assets/1.png" width="200" /> 
 <img src="client/assets/2.png" width="200" /> 
